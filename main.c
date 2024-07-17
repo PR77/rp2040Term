@@ -1,6 +1,21 @@
-/*  main.c - The main program
+/*  main.c - The main program -------------------------------------------------
+__________ __________      _________________________________
+\______   \\______   \     \__    ___/\_   _____/\__    ___/
+ |       _/ |     ___/       |    |    |    __)    |    |   
+ |    |   \ |    |           |    |    |     \     |    |   
+ |____|_  / |____|     /\    |____|    \___  /     |____|   
+        \/             \/                  \/               
+https://patorjk.com/software/taag/#p=display&h=0&v=0&f=Graffiti
 
-*/
+RP2040 Terminal Emulator for parallel RBG666 TFT Display using the RP2040
+scanvideo library. I used bits-and-pieces for these awesome repos to develop
+this;
+
+https://geoffg.net/terminal.html
+https://github.com/Memotech-Bill/pico-colour-text/tree/main
+https://github.com/RC2014Z80/picoterm
+
+-----------------------------------------------------------------------------*/
 
 #include "pico.h"
 #include "pico/stdlib.h"
@@ -17,15 +32,8 @@
 
 #define VID_CORE                1
 #define LED_FLASH_INTERVAL_MS   500
-// #define DEBUG
 
 static semaphore_t videoInitialised;
-
-static int iTopRow = 0;
-static int iCsrRow = TEXT_ROWS - 1;
-static int iCsrCol = TEXT_COLUMNS - 1;
-
-static uint16_t colours[64];
 
 void __time_critical_func(renderLoop)(void) {
     
