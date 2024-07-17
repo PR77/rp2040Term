@@ -344,6 +344,8 @@ void system_updateLedTask() {
 
 int main(void) {
 
+    uint8_t msgBuffer[TEXT_COLUMNS];
+
     set_sys_clock_khz(125000, true);
 
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -371,6 +373,11 @@ int main(void) {
 	//                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
     conio_printString("--[GPL 3 Clause]--------------------------------[(c) 2024]--\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    //                 012345678901234567890123456789012345678901234567890123456789
+	//                 |        |         |         |         |         |         |
+    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Build %s, Release %s\r\n", CMAKE_PROJECT_VERSION, __DATE__, CMAKE_PROJECT_DESCRIPTION);
+    conio_printString(msgBuffer, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_enableCursor();
     /*
     keyboard_loop();
