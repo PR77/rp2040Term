@@ -23,14 +23,16 @@ static const uint16_t conioPalette[] = {
       PICO_SCANVIDEO_PIXEL_FROM_RGB8(0xFF, 0xFF, 0xFF),     //white
 };
 
-static uint8_t topRow;
+/**
+    Initialise console character buffer and support data structures.
 
+    @param[in]     foregroundColourIndex index into palette for characters foreground colour.
+    @param[in]     backgroundColourIndex index into palette for characters background colour.
+*/
 void conio_initialiseCharacterBuffer(uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
 
     assert (!(foregroundColourIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
     assert (!(backgroundColourIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
-
-    topRow = 0;
 
     conioCursor.currentCursorRow = 0;
     conioCursor.currentCursorColumn = 0;
@@ -49,6 +51,13 @@ void conio_initialiseCharacterBuffer(uint8_t foregroundColourIndex, uint8_t back
     }
 }
 
+/**
+    Get a pointer to the character buffer structure at a specific location.
+
+    @param[in]     rowIndex row index into character buffer structure.
+    @param[in]     columnIndex column index into character buffer structure.
+    @param[out]    st_conioCharacter pointer to character buffer structure.
+*/
 st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnIndex) {
 
     assert (!(rowIndex > TEXT_ROWS));
@@ -57,6 +66,12 @@ st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnInde
     return (&conioCharacter[rowIndex][columnIndex]);
 }
 
+/**
+    Get a PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple for a specific palette index.
+
+    @param[in]     paletteIndex index into colour palette.
+    @param[out]    uint16_t PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple.
+*/
 uint16_t conio_getPaletteColour(uint8_t paletteIndex) {
 
     assert (!(paletteIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
@@ -64,11 +79,22 @@ uint16_t conio_getPaletteColour(uint8_t paletteIndex) {
     return (conioPalette[paletteIndex]);
 }
 
+/**
+    Get a pointer to the cursor position structure.
+
+    @param[out]    st_conioCursor pointer to cursor position structure.
+*/
 st_conioCursor *conio_getCurrentCursorPosition(void) {
 
     return (&conioCursor);
 }
 
+/**
+    Set a new cursor position based on row and column indexs to the screen.
+
+    @param[in]     rowIndex row index to the screen where the cursor shall be placed.
+    @param[in]     columnIndex column index to the screen where the cursor shall be placed.
+*/
 void conio_setNewCursorPosition(uint8_t rowIndex, uint8_t columnIndex) {
 
     assert (!(rowIndex > TEXT_ROWS));
@@ -78,8 +104,9 @@ void conio_setNewCursorPosition(uint8_t rowIndex, uint8_t columnIndex) {
     conioCursor.currentCursorColumn = columnIndex;
 }
 
-// ----------------------------------------------------------------------------
-
+/**
+    Cyclic function to handle cursor specifics. For example flashing.
+*/
 void conio_updateCursorTask(void) {
 
     static uint64_t previousTime = 0;
@@ -92,6 +119,9 @@ void conio_updateCursorTask(void) {
     }
 }
 
+/**
+    Handler function for refreshing the cursor for flashing or position changes.
+*/
 void conio_refreshCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -111,6 +141,9 @@ void conio_refreshCursor(void) {
     }
 }
 
+/**
+    Enable of the cursor. Cursor will be shown during refreshing.
+*/
 void conio_enableCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -119,6 +152,9 @@ void conio_enableCursor(void) {
     cursorPosition->cursorIsVisible = true;
 }
 
+/**
+    Disable of the cursor. Cursor will be hidden and not shown during refreshing.
+*/
 void conio_disableCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -127,6 +163,9 @@ void conio_disableCursor(void) {
     cursorPosition->cursorIsVisible = false;
 }
 
+/**
+    Display of the cursor. Cursor will be visible.
+*/
 void conio_displayCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -137,6 +176,9 @@ void conio_displayCursor(void) {
     ch->invert = true;
 }
 
+/**
+    Hide of the cursor. Cursor will be not visible.
+*/
 void conio_hideCursor(void) {
     
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -147,6 +189,9 @@ void conio_hideCursor(void) {
     ch->invert = false;
 }
 
+/**
+    Scroll entire screen and all content "UP" by 1 TEXT_ROW.
+*/
 void conio_scrollScreenUp(void) {
 
     for (uint8_t i = 0; i < (TEXT_ROWS - 1); i++) {
@@ -166,10 +211,20 @@ void conio_scrollScreenUp(void) {
     }
 }
 
+/**
+    Scroll entire screen and all content "DOWN" by 1 TEXT_ROW.
+*/
 void conio_scrollScreenDown(void) {
 
 }
 
+/**
+    Print a character to the character buffer structure with specific attributes.
+
+    @param[in]     character character to be printed to screen.
+    @param[in]     foregroundColourIndex index into palette for characters foreground colour.
+    @param[in]     backgroundColourIndex index into palette for characters background colour.
+*/
 void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
@@ -221,6 +276,13 @@ void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint
     }
 }
 
+/**
+    Print a string to the character buffer structure with specific attributes.
+
+    @param[in]     string_p string to be printed to screen.
+    @param[in]     foregroundColourIndex index into palette for characters foreground colour.
+    @param[in]     backgroundColourIndex index into palette for characters background colour.
+*/
 void conio_printString(uint8_t *string_p, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
 
     assert (string_p != NULL);

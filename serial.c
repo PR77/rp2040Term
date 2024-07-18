@@ -7,6 +7,11 @@
 
 st_serialConfiguration serialConfiguration;
 
+/**
+    Initialise serial UART point and support data structures.
+
+    @param[in]     uartId pointer to UART device.
+*/
 void serial_initialiseTerminalUart(uart_inst_t *uartId) {
 
     assert (uartId != NULL);
@@ -37,6 +42,9 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
     uart_set_irq_enables(uartId, true, false);
 }
 
+/**
+    UART receive data interrupt handler.
+*/
 void serial_uartReceiveHandler(void) {
     while (uart_is_readable_within_us(serialConfiguration.uartId, UART_TIMEOUT_US)) {
         conio_printCharacter(uart_getc(serialConfiguration.uartId), PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
