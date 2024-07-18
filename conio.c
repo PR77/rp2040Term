@@ -37,9 +37,9 @@ void conio_initialiseCharacterBuffer(uint8_t foregroundColourIndex, uint8_t back
     conioCursor.cursorIsVisible = false;
     conioCursor.cursorBlinkState = false;
 
-    for (int i = 0; i < (TEXT_ROWS); i++)
+    for (uint8_t i = 0; i < (TEXT_ROWS); i++)
     {
-        for (int j = 0; j < (TEXT_COLUMNS); j++)
+        for (uint8_t j = 0; j < (TEXT_COLUMNS); j++)
         {
             conioCharacter[i][j].foregroundColour = conio_getPaletteColour(foregroundColourIndex);
             conioCharacter[i][j].backgroundColour = conio_getPaletteColour(backgroundColourIndex);
@@ -149,6 +149,21 @@ void conio_hideCursor(void) {
 
 void conio_scrollScreenUp(void) {
 
+    for (uint8_t i = 0; i < (TEXT_ROWS - 1); i++) {
+        st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
+        st_conioCharacter *source = conio_getCharacterBuffer(i+1, 0);
+        assert (destination != NULL);
+        assert (source != NULL);
+
+        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS));
+    }
+
+    for (uint8_t i = 0; i < TEXT_COLUMNS; i++) {
+        st_conioCharacter *ch = conio_getCharacterBuffer((TEXT_ROWS - 1), i);
+        assert (ch != NULL);
+    
+        ch->locationCharacter = ' ';
+    }
 }
 
 void conio_scrollScreenDown(void) {
