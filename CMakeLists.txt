@@ -30,6 +30,7 @@ file(WRITE "build_number.h" ${VERSION_STRING})
 add_executable(rp2040Term
   main.c
   conio.c
+  serial.c
   font_sun8x16.c)
 
 target_compile_definitions(rp2040Term PUBLIC 

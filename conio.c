@@ -95,6 +95,7 @@ void conio_updateCursorTask(void) {
 void conio_refreshCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
 
     if (cursorPosition->cursorIsVisible == false) {
         conio_disableCursor();
@@ -113,6 +114,7 @@ void conio_refreshCursor(void) {
 void conio_enableCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
 
     cursorPosition->cursorIsVisible = true;
 }
@@ -120,6 +122,7 @@ void conio_enableCursor(void) {
 void conio_disableCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
 
     cursorPosition->cursorIsVisible = false;
 }
@@ -128,6 +131,9 @@ void conio_displayCursor(void) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
     st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
+    assert (cursorPosition != NULL);
+    assert (ch != NULL);
+
     ch->invert = true;
 }
 
@@ -135,6 +141,9 @@ void conio_hideCursor(void) {
     
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
     st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
+    assert (cursorPosition != NULL);
+    assert (ch != NULL);
+
     ch->invert = false;
 }
 
@@ -149,53 +158,51 @@ void conio_scrollScreenDown(void) {
 void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
 
     conio_hideCursor();
 
-    if ((character >= ' ') && (character <= 0x7F)) {
-        // Check if the character is printable, if so check and adjust cursor boundaries.
-        if (cursorPosition->currentCursorColumn > TEXT_COLUMNS) {
-            cursorPosition->currentCursorColumn = 0;
-            cursorPosition->currentCursorRow++;  
-        }
-
-        if (cursorPosition->currentCursorRow > TEXT_ROWS) {
-            cursorPosition->currentCursorRow = TEXT_ROWS;
-        }
-    } else {
+    if ((character >= 0x00) && (character <= 0x1F)) {
         // If it is not a printable character, then we need to check for control characters
         if (character == '\r') {
             cursorPosition->currentCursorColumn = 0;
         }
 
-        if ((character == '\n') && (cursorPosition->currentCursorRow < (TEXT_ROWS - 1))) {
+        if ((character == '\n') && (cursorPosition->currentCursorRow <= (TEXT_ROWS - 1))) {
             cursorPosition->currentCursorRow++;
         }
 
-        if ((character == '\t') && (cursorPosition->currentCursorColumn < (TEXT_COLUMNS - 4))) {
+        if ((character == '\t') && (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS - 4))) {
             cursorPosition->currentCursorColumn += 4;
         }
 
         if ((character == '\b') && (cursorPosition->currentCursorColumn > 0)) {
             cursorPosition->currentCursorColumn--;
         }
-    }
+    } else {
+        if ((character >= ' ') && (character <= 0x7F)) {
+            // Check if the character is printable, if so now finally print it. However,
+            // firstly check if we are at the screen bounds. If so, then screen scroll up the previous lines.
 
-    // If we are beyond the bottom of the screen scroll up the previous lines
-    if (cursorPosition->currentCursorRow > TEXT_ROWS) {
-    	//conio_scrollScreenUp();
-		//--cursorPosition->currentCursorRow;
-	}
+            if (cursorPosition->currentCursorColumn >= TEXT_COLUMNS) {
+                cursorPosition->currentCursorColumn = 0;
+                cursorPosition->currentCursorRow++;  
+            }
 
-    if ((character >= ' ') && (character <= 0x7F)) {
-        // Check if the character is printable, if so now finally print it
+            if (cursorPosition->currentCursorRow >= TEXT_ROWS) {
+                conio_scrollScreenUp();
+                cursorPosition->currentCursorRow--;
+            }
 
-        st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
-        ch->foregroundColour = conio_getPaletteColour(foregroundColourIndex);
-        ch->backgroundColour = conio_getPaletteColour(backgroundColourIndex);
-        ch->locationCharacter = character;
+            st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
+            assert (ch != NULL);
+            
+            ch->foregroundColour = conio_getPaletteColour(foregroundColourIndex);
+            ch->backgroundColour = conio_getPaletteColour(backgroundColourIndex);
+            ch->locationCharacter = character;
 
-        cursorPosition->currentCursorColumn++;
+            cursorPosition->currentCursorColumn++;
+        }
     }
 }
 

@@ -29,6 +29,7 @@ https://github.com/RC2014Z80/picoterm
 #include "class/hid/hid.h"
 #include "font_sun8x16.h"
 #include "conio.h"
+#include "serial.h"
 #include "build_number.h"
 
 #define VID_CORE                1
@@ -354,6 +355,7 @@ int main(void) {
     gpio_put(PICO_DEFAULT_LED_PIN, false);
 
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    serial_initialiseTerminalUart(uart1);
 
     // create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);
@@ -373,12 +375,30 @@ int main(void) {
 
 	//                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    conio_printString("--[GPL 3 Clause]--------------------------------[(c) 2024]--\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("--[GPL 3 Clause]--------------------------------[(c) 2024]--\r\n", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_printString("\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+
     //                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Built %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
-    conio_printString(msgBuffer, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Build %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
+    conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+
+    uint8_t serialParity = '?';
+	switch (UART_PARITY)
+	{
+        case UART_PARITY_NONE:
+            serialParity = 'N';
+            break;
+        case UART_PARITY_ODD:
+            serialParity = 'O';
+            break;
+        case UART_PARITY_EVEN:
+            serialParity = 'E';
+            break;
+	}
+
+    snprintf(msgBuffer, TEXT_COLUMNS, "Serial Configuration %d %i%c%i\r\n", UART_BAUD_RATE, UART_DATA_BITS, serialParity, UART_STOP_BITS);
+    conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_enableCursor();
     /*
     keyboard_loop();
