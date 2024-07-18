@@ -29,6 +29,7 @@ https://github.com/RC2014Z80/picoterm
 #include "class/hid/hid.h"
 #include "font_sun8x16.h"
 #include "conio.h"
+#include "build_number.h"
 
 #define VID_CORE                1
 #define LED_FLASH_INTERVAL_MS   500
@@ -376,7 +377,7 @@ int main(void) {
     conio_printString("\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     //                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Build %s, Release %s\r\n", CMAKE_PROJECT_VERSION, __DATE__, CMAKE_PROJECT_DESCRIPTION);
+    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Built %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
     conio_printString(msgBuffer, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_enableCursor();
     /*
