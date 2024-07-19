@@ -22,6 +22,7 @@ typedef struct {
 } st_serialConfiguration;
 
 void serial_initialiseTerminalUart(uart_inst_t *uartId);
+st_serialConfiguration *serial_getSerialConfiguration(void);
 void serial_uartReceiveHandler(void);
 
 #endif // SERIAL_H

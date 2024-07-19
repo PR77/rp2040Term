@@ -12,6 +12,6 @@ void status_initialiseStatusBar(e_colourPaletteIndexes foregroundColourIndex, e_
 
 /* Status bar functions */
 void status_forceStatusBarUpdate(void);
-void status_updateStatusBar(void);
+void status_updateStatusBarTask(void);
 
 #endif // STATUS_H

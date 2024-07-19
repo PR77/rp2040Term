@@ -4,11 +4,14 @@
 #include "time.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
+#include "main.h"
 #include "conio.h"
+#include "serial.h"
 #include "status.h"
 
 /**
-    Initialise status bar and support data structures.
+    Initialise status bar and support data structures. The status bar has a fixed structure
+    and content.
 
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
@@ -37,14 +40,58 @@ void status_initialiseStatusBar(e_colourPaletteIndexes foregroundColourIndex, e_
 */
 void status_forceStatusBarUpdate(void) {
 
-    // TODO
+    uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE + 1];
+    // Need to use TEXT_COLUMNS_VISIBLE + 1 to allow for the snprintf to add a NULL terminator.
 
+    st_serialConfiguration *serial = serial_getSerialConfiguration();
+    st_systemConfiguration *system = system_getSystemConfiguration();
+
+	// 012345678901234567890123456789012345678901234567890123456789
+	// |        |         |         |         |         |         |
+    // AAAAAA BCD, KEYMAP EE, B/L FFF%, BEEPER GGG, USB: HHHHHHHHHH
+    //
+    //     AAAAAA = Baudrate (6 characters fixed length)                                                 
+    //          B = Databits (1 character fixed length)
+    //          C = Databits (1 character fixed length)
+    //          D = Databits (1 character fixed length)
+    //         EE = Keymap (2 characters fixed length)
+    //        FFF = LCD Backlight percentage (3 characters fixed length)
+    //        GGG = Beeper / sounds on or off (3 characters fixed length)
+    // HHHHHHHHHH = USB details (10 characters fixed length)
+
+    uint8_t serialParity = '?';
+	switch (serial->parity)
+	{
+        case UART_PARITY_NONE:
+            serialParity = 'N';
+            break;
+        case UART_PARITY_ODD:
+            serialParity = 'O';
+            break;
+        case UART_PARITY_EVEN:
+            serialParity = 'E';
+            break;
+	}
+
+    snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "%06d %i%c%i, ", serial->baudRate, serial->dataBits, serialParity, serial->stopBits);
+    snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "KEYMAP DE, ");
+    snprintf(&msgBuffer[23], (TEXT_COLUMNS_VISIBLE - 23), "B/L %03d%%, ", system->lcdBacklightValue);
+    snprintf(&msgBuffer[33], (TEXT_COLUMNS_VISIBLE - 33), "BEEPER %s, ", (system->beeper == true) ? "ON " : "OFF");
+    snprintf(&msgBuffer[45], (TEXT_COLUMNS_VISIBLE - 45 + 1), "USB: 0123456789");
+
+    // Print status bar content directly to character buffer so as to not affect the cursor.
+    for (uint8_t i = 0; i < TEXT_COLUMNS_VISIBLE; i++) {
+        st_conioCharacter *ch = conio_getCharacterBuffer(STATUS_BAR_ROW, i);
+        assert (ch != NULL);
+    
+        ch->locationCharacter = msgBuffer[i];
+    }
 }
 
 /**
     Cyclic function to handle status bar specifics.
 */
-void status_updateStatusBar(void) {
+void status_updateStatusBarTask(void) {
 
     static uint64_t previousTime = 0;
 

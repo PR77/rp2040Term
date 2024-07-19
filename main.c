@@ -28,6 +28,7 @@ https://github.com/RC2014Z80/picoterm
 #include "tusb.h"
 #include "class/hid/hid.h"
 #include "font_sun8x16.h"
+#include "main.h"
 #include "conio.h"
 #include "serial.h"
 #include "status.h"
@@ -37,6 +38,7 @@ https://github.com/RC2014Z80/picoterm
 #define LED_FLASH_INTERVAL_MS   500
 
 static semaphore_t videoInitialised;
+static st_systemConfiguration systemConfiguration;
 
 void __time_critical_func(renderLoop)(void) {
     
@@ -345,6 +347,16 @@ void system_updateLedTask() {
     }
 }
 
+/**
+    Get a pointer to the system configuration.
+
+    @param[out]    st_systemConfiguration pointer to system configuration structure.
+*/
+st_systemConfiguration *system_getSystemConfiguration(void) {
+
+    return (&systemConfiguration);
+}
+
 int main(void) {
 
     uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
@@ -384,23 +396,6 @@ int main(void) {
 	//                 |        |         |         |         |         |         |
     snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "Version %s, Build %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
     conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
-
-    uint8_t serialParity = '?';
-	switch (UART_PARITY)
-	{
-        case UART_PARITY_NONE:
-            serialParity = 'N';
-            break;
-        case UART_PARITY_ODD:
-            serialParity = 'O';
-            break;
-        case UART_PARITY_EVEN:
-            serialParity = 'E';
-            break;
-	}
-
-    snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "Serial Configuration %d %i%c%i\r\n", UART_BAUD_RATE, UART_DATA_BITS, serialParity, UART_STOP_BITS);
-    conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_enableCursor();
     /*
     keyboard_loop();
@@ -408,5 +403,6 @@ int main(void) {
     while (true) {
         system_updateLedTask();
         conio_updateCursorTask();
+        status_updateStatusBarTask();
     }
 }

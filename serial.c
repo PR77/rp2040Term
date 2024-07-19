@@ -5,7 +5,7 @@
 #include "conio.h"
 #include "serial.h"
 
-st_serialConfiguration serialConfiguration;
+static st_serialConfiguration serialConfiguration;
 
 /**
     Initialise serial UART point and support data structures.
@@ -40,6 +40,16 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
 
     // Enable the UART
     uart_set_irq_enables(uartId, true, false);
+}
+
+/**
+    Get a pointer to the serial port (UART) configuration.
+
+    @param[out]    st_serialConfiguration pointer to serial port configuration structure.
+*/
+st_serialConfiguration *serial_getSerialConfiguration(void) {
+
+    return (&serialConfiguration);
 }
 
 /**
