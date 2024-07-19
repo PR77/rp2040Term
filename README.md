@@ -1,5 +1,5 @@
 # rp2040Term
-PR2040 VT100 Terminal with Parallel TFT LCD.
+PR2040 VT100 Terminal with Parallel TFT LCD. Work in progress!
 
 # Warning
 This design has not been compliance tested and will not be. It may cause personal damage to you or others. I take no responsibility for this. I accept no responsibility for any damage to any equipment that results from the use of this design and its components. IT IS ENTIRELY AT YOUR OWN RISK!
