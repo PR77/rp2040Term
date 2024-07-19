@@ -7,7 +7,6 @@
 #include "pico/scanvideo/composable_scanline.h"
 
 typedef enum {
-
     PALETTE_COLOUR_BLACK_INDEX = 0,
     PALETTE_COLOUR_RED_INDEX,
     PALETTE_COLOUR_GREEN_INDEX,
