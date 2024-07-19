@@ -6,17 +6,21 @@
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 
-#define PALETTE_COLOUR_BLACK_INDEX      0
-#define PALETTE_COLOUR_RED_INDEX        1
-#define PALETTE_COLOUR_GREEN_INDEX      2
-#define PALETTE_COLOUR_BLUE_INDEX       3
-#define PALETTE_COLOUR_BROWN_INDEX      4
-#define PALETTE_COLOUR_MAGENTA_INDEX    5
-#define PALETTE_COLOUR_CYAN_INDEX       6
-#define PALETTE_COLOUR_GREY_INDEX       7
-#define PALETTE_COLOUR_YELLOW_INDEX     8
-#define PALETTE_COLOUR_AMBER_INDEX      9
-#define PALETTE_COLOUR_WHITE_INDEX      10
+typedef enum {
+
+    PALETTE_COLOUR_BLACK_INDEX = 0,
+    PALETTE_COLOUR_RED_INDEX,
+    PALETTE_COLOUR_GREEN_INDEX,
+    PALETTE_COLOUR_BLUE_INDEX,
+    PALETTE_COLOUR_BROWN_INDEX,
+    PALETTE_COLOUR_MAGENTA_INDEX,
+    PALETTE_COLOUR_CYAN_INDEX,
+    PALETTE_COLOUR_GREY_INDEX,
+    PALETTE_COLOUR_YELLOW_INDEX,
+    PALETTE_COLOUR_AMBER_INDEX,
+    PALETTE_COLOUR_WHITE_INDEX,
+    MAX_PALETTE_COLOURS
+} e_colourPaletteIndexes;
 
 #define CURSOR_FLASH_INTERVAL_MS        525
 
@@ -34,7 +38,9 @@ typedef struct {
     bool        cursorBlinkState;
 } st_conioCursor;
 
-void conio_initialiseCharacterBuffer(uint8_t foregroundColourIndex, uint8_t backgroundColourIndex);
+extern const uint16_t conioPalette[MAX_PALETTE_COLOURS];
+
+void conio_initialiseCharacterBuffer(e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
 st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnIndex);
 uint16_t conio_getPaletteColour(uint8_t paletteIndex);
 st_conioCursor *conio_getCurrentCursorPosition(void);
@@ -53,7 +59,7 @@ void conio_scrollScreenUp(void);
 void conio_scrollScreenDown(void);
 
 /* Print functions */
-void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex);
-void conio_printString(uint8_t *string_p, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex);
+void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
+void conio_printString(uint8_t *string_p, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
 
 #endif // CONIO_H

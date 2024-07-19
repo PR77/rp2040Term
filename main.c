@@ -30,6 +30,7 @@ https://github.com/RC2014Z80/picoterm
 #include "font_sun8x16.h"
 #include "conio.h"
 #include "serial.h"
+#include "status.h"
 #include "build_number.h"
 
 #define VID_CORE                1
@@ -346,7 +347,7 @@ void system_updateLedTask() {
 
 int main(void) {
 
-    uint8_t msgBuffer[TEXT_COLUMNS];
+    uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
 
     set_sys_clock_khz(125000, true);
 
@@ -355,6 +356,7 @@ int main(void) {
     gpio_put(PICO_DEFAULT_LED_PIN, false);
 
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    status_initialiseStatusBar(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
     serial_initialiseTerminalUart(uart1);
 
     // create a semaphore to be posted when video init is complete
@@ -380,7 +382,7 @@ int main(void) {
 
     //                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    snprintf(msgBuffer, TEXT_COLUMNS, "Version %s, Build %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
+    snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "Version %s, Build %d, Release %s\r\n", CMAKE_PROJECT_VERSION, BUILD_NUMBER, CMAKE_PROJECT_DESCRIPTION);
     conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
 
     uint8_t serialParity = '?';
@@ -397,7 +399,7 @@ int main(void) {
             break;
 	}
 
-    snprintf(msgBuffer, TEXT_COLUMNS, "Serial Configuration %d %i%c%i\r\n", UART_BAUD_RATE, UART_DATA_BITS, serialParity, UART_STOP_BITS);
+    snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "Serial Configuration %d %i%c%i\r\n", UART_BAUD_RATE, UART_DATA_BITS, serialParity, UART_STOP_BITS);
     conio_printString(msgBuffer, PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_enableCursor();
     /*

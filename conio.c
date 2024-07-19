@@ -9,7 +9,7 @@
 static st_conioCharacter conioCharacter[TEXT_ROWS][TEXT_COLUMNS];
 static st_conioCursor conioCursor;
 
-static const uint16_t conioPalette[] = {
+const uint16_t conioPalette[MAX_PALETTE_COLOURS] = {
       PICO_SCANVIDEO_PIXEL_FROM_RGB8(0x00, 0x00, 0x00),     //black
       PICO_SCANVIDEO_PIXEL_FROM_RGB8(0xFF, 0x00, 0x00),     //red
       PICO_SCANVIDEO_PIXEL_FROM_RGB8(0x00, 0xFF, 0x00),     //green
@@ -29,7 +29,7 @@ static const uint16_t conioPalette[] = {
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
 */
-void conio_initialiseCharacterBuffer(uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
+void conio_initialiseCharacterBuffer(e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex) {
 
     assert (!(foregroundColourIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
     assert (!(backgroundColourIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
@@ -72,7 +72,7 @@ st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnInde
     @param[in]     paletteIndex index into colour palette.
     @param[out]    uint16_t PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple.
 */
-uint16_t conio_getPaletteColour(uint8_t paletteIndex) {
+uint16_t conio_getPaletteColour(e_colourPaletteIndexes paletteIndex) {
 
     assert (!(paletteIndex > (sizeof(conioPalette) / sizeof(conioPalette[0]))));
 
@@ -97,8 +97,8 @@ st_conioCursor *conio_getCurrentCursorPosition(void) {
 */
 void conio_setNewCursorPosition(uint8_t rowIndex, uint8_t columnIndex) {
 
-    assert (!(rowIndex > TEXT_ROWS));
-    assert (!(columnIndex > TEXT_COLUMNS));
+    assert (!(rowIndex > TEXT_ROWS_VISIBLE));
+    assert (!(columnIndex > TEXT_COLUMNS_VISIBLE));
 
     conioCursor.currentCursorRow = rowIndex;
     conioCursor.currentCursorColumn = columnIndex;
@@ -195,18 +195,18 @@ void conio_hideCursor(void) {
 void conio_scrollScreenUp(void) {
 
     // Move all rows up by 1 row. Start at top and itterate down.
-    for (uint8_t i = 0; i < (TEXT_ROWS - 1); i++) {
+    for (uint8_t i = 0; i < (TEXT_ROWS_VISIBLE - 1); i++) {
         st_conioCharacter *source = conio_getCharacterBuffer(i+1, 0);
         st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
         assert (source != NULL);
         assert (destination != NULL);
 
-        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS));
+        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS_VISIBLE));
     }
 
     // Clear content of last "new" row. Keep colours and other attributes as-is.
-    for (uint8_t i = 0; i < TEXT_COLUMNS; i++) {
-        st_conioCharacter *ch = conio_getCharacterBuffer((TEXT_ROWS - 1), i);
+    for (uint8_t i = 0; i < TEXT_COLUMNS_VISIBLE; i++) {
+        st_conioCharacter *ch = conio_getCharacterBuffer((TEXT_ROWS_VISIBLE - 1), i);
         assert (ch != NULL);
     
         ch->locationCharacter = ' ';
@@ -219,17 +219,17 @@ void conio_scrollScreenUp(void) {
 void conio_scrollScreenDown(void) {
 
     // Move all rows down by 1 row. Start and bottom and itterate up.
-    for (uint8_t i = (TEXT_ROWS - 1); i > 0; i--) {
+    for (uint8_t i = (TEXT_ROWS_VISIBLE - 1); i > 0; i--) {
         st_conioCharacter *source = conio_getCharacterBuffer(i-1, 0);
         st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
         assert (source != NULL);
         assert (destination != NULL);
 
-        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS));
+        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS_VISIBLE));
     }
 
     // Clear content of first "new" row. Keep colours and other attributes as-is.
-    for (uint8_t i = 0; i < TEXT_COLUMNS; i++) {
+    for (uint8_t i = 0; i < TEXT_COLUMNS_VISIBLE; i++) {
         st_conioCharacter *ch = conio_getCharacterBuffer(0, i);
         assert (ch != NULL);
     
@@ -244,7 +244,7 @@ void conio_scrollScreenDown(void) {
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
 */
-void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
+void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex) {
 
     st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
     assert (cursorPosition != NULL);
@@ -257,11 +257,11 @@ void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint
             cursorPosition->currentCursorColumn = 0;
         }
 
-        if ((character == '\n') && (cursorPosition->currentCursorRow <= (TEXT_ROWS - 1))) {
+        if ((character == '\n') && (cursorPosition->currentCursorRow <= (TEXT_ROWS_VISIBLE - 1))) {
             cursorPosition->currentCursorRow++;
         }
 
-        if ((character == '\t') && (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS - 4))) {
+        if ((character == '\t') && (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS_VISIBLE - 4))) {
             cursorPosition->currentCursorColumn += 4;
         }
 
@@ -273,12 +273,12 @@ void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint
             // Check if the character is printable, if so now finally print it. However,
             // firstly check if we are at the screen bounds. If so, then screen scroll up the previous lines.
 
-            if (cursorPosition->currentCursorColumn >= TEXT_COLUMNS) {
+            if (cursorPosition->currentCursorColumn >= TEXT_COLUMNS_VISIBLE) {
                 cursorPosition->currentCursorColumn = 0;
                 cursorPosition->currentCursorRow++;  
             }
 
-            if (cursorPosition->currentCursorRow >= TEXT_ROWS) {
+            if (cursorPosition->currentCursorRow >= TEXT_ROWS_VISIBLE) {
                 conio_scrollScreenUp();
                 cursorPosition->currentCursorRow--;
             }
@@ -302,7 +302,7 @@ void conio_printCharacter(uint8_t character, uint8_t foregroundColourIndex, uint
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
 */
-void conio_printString(uint8_t *string_p, uint8_t foregroundColourIndex, uint8_t backgroundColourIndex) {
+void conio_printString(uint8_t *string_p, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex) {
 
     assert (string_p != NULL);
 
