@@ -32,6 +32,7 @@ add_executable(rp2040Term
   conio.c
   serial.c
   status.c
+  keyboard.c
   font_sun8x16.c)
 
 target_compile_definitions(rp2040Term PUBLIC 
@@ -58,6 +59,7 @@ target_link_libraries(rp2040Term PRIVATE
   pico_stdlib
   pico_scanvideo_dpi
   pico_multicore
+  hardware_pwm
   tinyusb_host
   tinyusb_board)
 
