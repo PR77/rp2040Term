@@ -194,15 +194,17 @@ void conio_hideCursor(void) {
 */
 void conio_scrollScreenUp(void) {
 
+    // Move all rows up by 1 row. Start at top and itterate down.
     for (uint8_t i = 0; i < (TEXT_ROWS - 1); i++) {
-        st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
         st_conioCharacter *source = conio_getCharacterBuffer(i+1, 0);
-        assert (destination != NULL);
+        st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
         assert (source != NULL);
+        assert (destination != NULL);
 
         memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS));
     }
 
+    // Clear content of last "new" row. Keep colours and other attributes as-is.
     for (uint8_t i = 0; i < TEXT_COLUMNS; i++) {
         st_conioCharacter *ch = conio_getCharacterBuffer((TEXT_ROWS - 1), i);
         assert (ch != NULL);
@@ -216,6 +218,25 @@ void conio_scrollScreenUp(void) {
 */
 void conio_scrollScreenDown(void) {
 
+    // TODO: NOT WORKING...
+
+    // Move all rows down by 1 row. Start and bottom and itterate up.
+    for (uint8_t i = (TEXT_ROWS - 1); i > 0; i--) {
+        st_conioCharacter *source = conio_getCharacterBuffer(i-1, 0);
+        st_conioCharacter *destination = conio_getCharacterBuffer(i, 0);
+        assert (source != NULL);
+        assert (destination != NULL);
+
+        memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS));
+    }
+
+    // Clear content of first "new" row. Keep colours and other attributes as-is.
+    for (uint8_t i = 0; i < TEXT_COLUMNS; i++) {
+        st_conioCharacter *ch = conio_getCharacterBuffer(0, i);
+        assert (ch != NULL);
+    
+        ch->locationCharacter = ' ';
+    }
 }
 
 /**
