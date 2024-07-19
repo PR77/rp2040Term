@@ -218,8 +218,6 @@ void conio_scrollScreenUp(void) {
 */
 void conio_scrollScreenDown(void) {
 
-    // TODO: NOT WORKING...
-
     // Move all rows down by 1 row. Start and bottom and itterate up.
     for (uint8_t i = (TEXT_ROWS - 1); i > 0; i--) {
         st_conioCharacter *source = conio_getCharacterBuffer(i-1, 0);
