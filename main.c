@@ -43,7 +43,7 @@ https://github.com/RC2014Z80/picoterm
 static semaphore_t videoInitialised;
 static st_systemConfiguration systemConfiguration;
 
-void __time_critical_func(renderLoop)(void) {
+void __time_critical_func(system_renderLoop)(void) {
     
     int core_num = get_core_num();
     assert (core_num >= 0 && core_num < 2);
@@ -106,7 +106,7 @@ void system_initialiseScanVideo(void) {
     scanvideo_setup(&vga_mode_480x272_60);
     scanvideo_timing_enable(true);
     sem_release(&videoInitialised);
-    renderLoop();
+    system_renderLoop();
 }
 
 void system_onPwmWrap(void) {

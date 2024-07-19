@@ -8,3 +8,7 @@ This design has not been compliance tested and will not be. It may cause persona
 The main purpose of this design was to lern about the RP2040 scanvideo library components and utilise them with a Parallel TFT LCD. Parallel meaning the interfaces uses HYSNC, VSYNC, DEN (currently not used), PCLK and RGB[5] signals.
 
 I am currently using this with a Sharp LQ042 LCD with a resolution of 480x272. This works perfectly with a 8x16 Font to give a total of 60 Columns by 17 Rows.
+
+# Appearance
+![LCD Screen](/Images/lcdScreen.jpg)
+![Mess Of Wires](/Images/messOfWires.jpg)
