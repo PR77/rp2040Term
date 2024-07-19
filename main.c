@@ -113,7 +113,7 @@ void system_onPwmWrap(void) {
     // Clear the interrupt flag that brought us here
     pwm_clear_irq(pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN));
   
-    uint16_t targetPwmValue = (systemConfiguration.lcdBacklightValue * UINT16_MAX) / 100;
+    uint16_t targetPwmValue = (systemConfiguration.lcdBacklightValue * UINT16_MAX) / LCD_BACKLIGHTING_PWM_MAX;
 
     pwm_set_gpio_level(LCD_BACKLIGHT_PWM_PIN, targetPwmValue);
 }
