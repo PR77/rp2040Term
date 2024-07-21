@@ -273,16 +273,6 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
             // Check if the character is printable, if so now finally print it. However,
             // firstly check if we are at the screen bounds. If so, then screen scroll up the previous lines.
 
-            if (cursorPosition->currentCursorColumn >= TEXT_COLUMNS_VISIBLE) {
-                cursorPosition->currentCursorColumn = 0;
-                cursorPosition->currentCursorRow++;  
-            }
-
-            if (cursorPosition->currentCursorRow >= TEXT_ROWS_VISIBLE) {
-                conio_scrollScreenUp();
-                cursorPosition->currentCursorRow--;
-            }
-
             st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
             assert (ch != NULL);
             
@@ -291,6 +281,23 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
             ch->locationCharacter = character;
 
             cursorPosition->currentCursorColumn++;
+
+            if (cursorPosition->currentCursorColumn >= TEXT_COLUMNS_VISIBLE) {
+                cursorPosition->currentCursorColumn = 0;
+
+                // Check that the row will not increment to the status bar and potentially overwrite the
+                // first character of the status bar.
+                if (cursorPosition->currentCursorRow < TEXT_ROWS_VISIBLE) {
+                    cursorPosition->currentCursorRow++;
+                }  
+            }
+
+            if (cursorPosition->currentCursorRow >= TEXT_ROWS_VISIBLE) {
+                conio_scrollScreenUp();
+                cursorPosition->currentCursorRow--;
+            }
+
+
         }
     }
 }

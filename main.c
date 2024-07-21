@@ -174,9 +174,9 @@ int main(void) {
 
 	//                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    conio_printString("--------------------------------[RP2040Term TFT - By PR77]--\r\n", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
-    conio_printString("__________ __________      _________________________________\r\n", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
-    conio_printString("\\______   \\\\______   \\     \\__    ___/\\_   _____/\\__    ___/\r\n", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("--------------------------------[RP2040Term TFT - By PR77]--", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("__________ __________      _________________________________", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("\\______   \\\\______   \\     \\__    ___/\\_   _____/\\__    ___/", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_printString(" |       _/ |     ___/       |    |    |    __)    |    |\r\n", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);   
     conio_printString(" |    |   \\ |    |           |    |    |     \\     |    |\r\n", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);   
     conio_printString(" |____|_  / |____|     /\\    |____|    \\___  /     |____|\r\n", PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);   
@@ -184,7 +184,7 @@ int main(void) {
 
 	//                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
-    conio_printString("--[GPL 3 Clause]--------------------------------[(c) 2024]--\r\n", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_printString("--[GPL 3 Clause]--------------------------------[(c) 2024]--", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     conio_printString("\r\n", PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_BLACK_INDEX);
 
     //                 012345678901234567890123456789012345678901234567890123456789
