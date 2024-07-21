@@ -296,8 +296,6 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
                 conio_scrollScreenUp();
                 cursorPosition->currentCursorRow--;
             }
-
-
         }
     }
 }
