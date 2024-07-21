@@ -43,6 +43,40 @@ https://github.com/RC2014Z80/picoterm
 static semaphore_t videoInitialised;
 static st_systemConfiguration systemConfiguration;
 
+const scanvideo_timing_t tftLQ043Timing_480x272_50 =
+{
+    //.clock_freq = 9500000, // with set_sys_clock_khz (133000, true);
+    .clock_freq = 7812500, // with set_sys_clock_khz (125000, true);
+
+    .h_active = 480,
+    .v_active = 272,
+
+    .h_front_porch = 2,
+    .h_pulse = 96,
+    .h_total = 598,
+    .h_sync_polarity = 1,
+
+    .v_front_porch = 2,
+    .v_pulse = 2,
+    .v_total = 305,
+    .v_sync_polarity = 1,
+
+    .enable_clock = 1,
+    .clock_polarity = 1,
+
+    .enable_den = 0
+};    
+
+const scanvideo_mode_t tftLQ042_480x272_60 =
+{
+    .default_timing = &tftLQ043Timing_480x272_50,
+    .pio_program = &video_24mhz_composable,
+    .width = 480,
+    .height = 272,
+    .xscale = 1,
+    .yscale = 1,
+};            
+
 void __time_critical_func(system_renderLoop)(void) {
     
     int core_num = get_core_num();
@@ -103,7 +137,7 @@ void __time_critical_func(system_renderLoop)(void) {
 
 void system_initialiseScanVideo(void) {
 
-    scanvideo_setup(&vga_mode_480x272_60);
+    scanvideo_setup(&tftLQ042_480x272_60);
     scanvideo_timing_enable(true);
     sem_release(&videoInitialised);
     system_renderLoop();
