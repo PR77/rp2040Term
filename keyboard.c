@@ -5,24 +5,59 @@
 #include "tusb.h"
 #include "keyboard.h"
 
+st_keyboardConfiguration keyboardConfiguration;
+
+const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
+
+/**
+    Initialise the USH Host and keyboard interface.
+*/
 void keyboard_initialiseKeyboard(void) {
 
+    keyboardConfiguration.tusbInitialised = false;
+    keyboardConfiguration.deviceMounted = false;
+    keyboardConfiguration.deviceAddress = 0;
+    keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[0];
     tusb_init();
+}
+
+/**
+    Get a pointer to the keyboard configuration.
+
+    @param[out]    st_keyboardConfiguration pointer to keyboard configuration structure.
+*/
+st_keyboardConfiguration *keyboard_getKeyboardConfiguration(void) {
+
+    return (&keyboardConfiguration);
 }
 
 void keyboard_updateKeyboardTask(void) {
 
     if (true == tusb_inited()) {
+        keyboardConfiguration.tusbInitialised = true;
         tuh_task();
+    } else {
+        keyboardConfiguration.tusbInitialised = false;
     }
 }
 
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_report, uint16_t desc_len) {
 
+    // Interface protocol (hid_interface_protocol_enum_t)
+    uint8_t const itf_protocol = tuh_hid_interface_protocol(dev_addr, instance);
+
+    keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[itf_protocol];
+    keyboardConfiguration.deviceMounted = true;
+    keyboardConfiguration.deviceAddress = dev_addr;
 }
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance) {
 
+    if (dev_addr == keyboardConfiguration.deviceAddress) {
+        keyboardConfiguration.deviceMounted = false;
+        keyboardConfiguration.deviceAddress = 0;
+        keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[0];
+    }
 }
 
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance, uint8_t const* report, uint16_t len) {

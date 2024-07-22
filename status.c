@@ -7,6 +7,7 @@
 #include "main.h"
 #include "conio.h"
 #include "serial.h"
+#include "keyboard.h"
 #include "status.h"
 
 /**
@@ -45,6 +46,9 @@ void status_forceStatusBarUpdate(void) {
 
     st_serialConfiguration *serial = serial_getSerialConfiguration();
     st_systemConfiguration *system = system_getSystemConfiguration();
+    st_keyboardConfiguration *keyboard = keyboard_getKeyboardConfiguration();
+
+    memset(msgBuffer, 0, (sizeof(msgBuffer) / sizeof(msgBuffer[0])));
 
 	// 012345678901234567890123456789012345678901234567890123456789
 	// |        |         |         |         |         |         |
@@ -77,14 +81,18 @@ void status_forceStatusBarUpdate(void) {
     snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "KEYMAP DE, ");
     snprintf(&msgBuffer[23], (TEXT_COLUMNS_VISIBLE - 23), "B/L %03d%%, ", system->lcdBacklightValue);
     snprintf(&msgBuffer[33], (TEXT_COLUMNS_VISIBLE - 33), "BEEPER %s, ", (system->beeper == true) ? "ON " : "OFF");
-    snprintf(&msgBuffer[45], (TEXT_COLUMNS_VISIBLE - 45 + 1), "USB: 0123456789");
+    snprintf(&msgBuffer[45], (TEXT_COLUMNS_VISIBLE - 45 + 1), "USB: %s", keyboard->deviceStr);
 
     // Print status bar content directly to character buffer so as to not affect the cursor.
     for (uint8_t i = 0; i < TEXT_COLUMNS_VISIBLE; i++) {
         st_conioCharacter *ch = conio_getCharacterBuffer(STATUS_BAR_ROW, i);
         assert (ch != NULL);
     
-        ch->locationCharacter = msgBuffer[i];
+        if (msgBuffer[i] != NULL) {
+            ch->locationCharacter = msgBuffer[i];
+        } else {
+            ch->locationCharacter = ' ';
+        }
     }
 }
 

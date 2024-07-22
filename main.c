@@ -43,8 +43,8 @@ https://github.com/RC2014Z80/picoterm
 static semaphore_t videoInitialised;
 static st_systemConfiguration systemConfiguration;
 
-const scanvideo_timing_t tftLQ043Timing_480x272_50 =
-{
+const scanvideo_timing_t tftLQ043Timing_480x272_50 = {
+    
     //.clock_freq = 9500000, // with set_sys_clock_khz (133000, true);
     .clock_freq = 7812500, // with set_sys_clock_khz (125000, true);
 
@@ -67,8 +67,8 @@ const scanvideo_timing_t tftLQ043Timing_480x272_50 =
     .enable_den = 0
 };    
 
-const scanvideo_mode_t tftLQ042_480x272_60 =
-{
+const scanvideo_mode_t tftLQ042_480x272_60 = {
+
     .default_timing = &tftLQ043Timing_480x272_50,
     .pio_program = &video_24mhz_composable,
     .width = 480,
