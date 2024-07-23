@@ -57,6 +57,14 @@ void system_toggleBeeper(void) {
     systemConfiguration.beeper ^= true;
 }
 
+/**
+    Toggle local echo ON or OFF.
+
+*/
+void system_toggleLocalEcho(void) {
+
+    systemConfiguration.localEcho ^= true;
+}
 
 /**
     Increase backlight value by 1 step size.

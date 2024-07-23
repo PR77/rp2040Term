@@ -101,11 +101,15 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {
-                if ( find_key_in_report(&previousReport, currentReport->keycode[i]) ) {
+                if (find_key_in_report(&previousReport, currentReport->keycode[i])) {
                     // exist in previous report means the current key is holding
                 } else {
                     // not existed in previous report means the current key is pressed
                     switch (currentReport->keycode[i]) {
+                        case HID_KEY_F9:
+                            system_toggleLocalEcho();
+                            break;
+                            
                         case HID_KEY_F10:
                             system_decreaseBacklightByStep();
                             break;

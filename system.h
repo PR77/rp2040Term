@@ -14,12 +14,14 @@
 
 typedef struct {
     bool    beeper;
+    bool    localEcho;
     uint8_t lcdBacklightValue;
 } st_systemConfiguration;
 
 void system_initialiseSystem(void);
 st_systemConfiguration *system_getSystemConfiguration(void);
 void system_toggleBeeper(void);
+void system_toggleLocalEcho(void);
 void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
 void system_onPwmWrap(void);
