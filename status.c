@@ -78,7 +78,8 @@ void status_forceStatusBarUpdate(void) {
 	}
 
     snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "%06d %i%c%i, ", serial->baudRate, serial->dataBits, serialParity, serial->stopBits);
-    snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "KEYMAP DE, ");
+    snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "KEYMAP ");
+    snprintf(&msgBuffer[19], (TEXT_COLUMNS_VISIBLE - 19), "%s, ", KEYMAP);
     snprintf(&msgBuffer[23], (TEXT_COLUMNS_VISIBLE - 23), "B/L %03d%%, ", system->lcdBacklightValue);
     snprintf(&msgBuffer[33], (TEXT_COLUMNS_VISIBLE - 33), "BEEPER %s, ", (system->beeper == true) ? "ON " : "OFF");
     snprintf(&msgBuffer[45], (TEXT_COLUMNS_VISIBLE - 45 + 1), "USB: %s", keyboard->deviceStr);
