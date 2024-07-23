@@ -7,15 +7,14 @@
 #include "class/hid/hid.h"
 #include "conio.h"
 #include "keyboard.h"
+#include "system.h"
 #include "main.h"
 
 static st_keyboardConfiguration keyboardConfiguration;
 static st_deviceReports deviceReports;
 
 static const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
-
-// TODO: HID_KEYCODE_TO_ASCII currently set for US Keymap and not DE.
-static const uint8_t keycode2ascii[128][2] =  { HID_KEYCODE_TO_ASCII };
+static const uint8_t keycode2ascii[128][3] =  {DE_KEYCODE_TO_ASCII};
 
 /**
     Initialise the USH Host and keyboard interface.
@@ -117,7 +116,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
                         default: {
                             bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-                            uint8_t ch = keycode2ascii[currentReport->keycode[i]][is_shift ? 1 : 0];
+                            bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                            uint8_t ch = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
                             conio_printCharacter(ch, 1, 0);
                         }
                         break;
