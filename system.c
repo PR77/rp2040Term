@@ -49,6 +49,16 @@ st_systemConfiguration *system_getSystemConfiguration(void) {
 }
 
 /**
+    Toggle beeper ON or OFF.
+
+*/
+void system_toggleBeeper(void) {
+
+    systemConfiguration.beeper ^= true;
+}
+
+
+/**
     Increase backlight value by 1 step size.
 
 */

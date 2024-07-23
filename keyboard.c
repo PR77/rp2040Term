@@ -110,6 +110,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
                             system_decreaseBacklightByStep();
                             break;
 
+                        case HID_KEY_F11:
+                            system_toggleBeeper();
+                            break;
+
                         case HID_KEY_F12:
                             system_increaseBacklightByStep();
                             break;

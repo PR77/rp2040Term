@@ -19,6 +19,7 @@ typedef struct {
 
 void system_initialiseSystem(void);
 st_systemConfiguration *system_getSystemConfiguration(void);
+void system_toggleBeeper(void);
 void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
 void system_onPwmWrap(void);
