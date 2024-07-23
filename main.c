@@ -35,16 +35,15 @@ https://github.com/RC2014Z80/picoterm
 #include "serial.h"
 #include "status.h"
 #include "keyboard.h"
+#include "system.h"
 #include "build_number.h"
 
 #define VID_CORE                1
-#define LCD_BACKLIGHT_PWM_PIN   28
 
 static semaphore_t videoInitialised;
-static st_systemConfiguration systemConfiguration;
 
 const scanvideo_timing_t tftLQ043Timing_480x272_50 = {
-    
+
     //.clock_freq = 9500000, // with set_sys_clock_khz (133000, true);
     .clock_freq = 7812500, // with set_sys_clock_khz (125000, true);
 
@@ -143,25 +142,6 @@ void system_initialiseScanVideo(void) {
     system_renderLoop();
 }
 
-void system_onPwmWrap(void) {
-    // Clear the interrupt flag that brought us here
-    pwm_clear_irq(pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN));
-  
-    uint16_t targetPwmValue = (systemConfiguration.lcdBacklightValue * UINT16_MAX) / LCD_BACKLIGHTING_PWM_MAX;
-
-    pwm_set_gpio_level(LCD_BACKLIGHT_PWM_PIN, targetPwmValue);
-}
-
-/**
-    Get a pointer to the system configuration.
-
-    @param[out]    st_systemConfiguration pointer to system configuration structure.
-*/
-st_systemConfiguration *system_getSystemConfiguration(void) {
-
-    return (&systemConfiguration);
-}
-
 int main(void) {
 
     uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
@@ -173,32 +153,11 @@ int main(void) {
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     gpio_put(PICO_DEFAULT_LED_PIN, false);
 
-    // Setup GPIO for LCD backlighting
-    gpio_set_function(LCD_BACKLIGHT_PWM_PIN, GPIO_FUNC_PWM);
-    uint slice_num = pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN);
-
-    // Mask our slice's IRQ output into the PWM block's single interrupt line,
-    // and register our interrupt handler
-    pwm_clear_irq(slice_num);
-    pwm_set_irq_enabled(slice_num, true);
-    irq_set_exclusive_handler(PWM_IRQ_WRAP, system_onPwmWrap);
-    irq_set_enabled(PWM_IRQ_WRAP, true);
-
-    // Get some sensible defaults for the slice configuration. By default, the
-    // counter is allowed to wrap over its maximum range (0 to 2**16-1)
-    pwm_config config = pwm_get_default_config();
-    // Set divider, reduces counter clock to sysclock/this value
-    pwm_config_set_clkdiv(&config, 10.f);
-    // Load the configuration into our PWM slice, and set it running.
-    pwm_init(slice_num, &config, true);
-
+    system_initialiseSystem();
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     status_initialiseStatusBar(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
     serial_initialiseTerminalUart(uart1);
     keyboard_initialiseKeyboard();
-
-    // For the moment, force the LCD backlighting to 75%.
-    systemConfiguration.lcdBacklightValue = 75;
 
     // create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);

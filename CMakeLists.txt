@@ -29,6 +29,7 @@ file(WRITE "build_number.h" ${VERSION_STRING})
 
 add_executable(rp2040Term
   main.c
+  system.c
   conio.c
   serial.c
   status.c

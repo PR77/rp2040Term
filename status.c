@@ -5,6 +5,7 @@
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "main.h"
+#include "system.h"
 #include "conio.h"
 #include "serial.h"
 #include "keyboard.h"
@@ -64,8 +65,7 @@ void status_forceStatusBarUpdate(void) {
     // HHHHHHHHHH = USB details (10 characters fixed length)
 
     uint8_t serialParity = '?';
-	switch (serial->parity)
-	{
+	switch (serial->parity) {
         case UART_PARITY_NONE:
             serialParity = 'N';
             break;
