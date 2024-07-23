@@ -118,6 +118,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
                             bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
                             bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
                             uint8_t ch = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
+
+                            // TODO: Remove this, printing character to conio ONLY for testing...
                             conio_printCharacter(ch, 1, 0);
                         }
                         break;
