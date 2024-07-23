@@ -3,9 +3,11 @@
 #include "string.h"
 #include "time.h"
 #include "tusb.h"
+#include "class/hid/hid.h"
 #include "keyboard.h"
 
-st_keyboardConfiguration keyboardConfiguration;
+static st_keyboardConfiguration keyboardConfiguration;
+static st_deviceReports deviceReports;
 
 const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
 
@@ -15,9 +17,11 @@ const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
 void keyboard_initialiseKeyboard(void) {
 
     keyboardConfiguration.tusbInitialised = false;
-    keyboardConfiguration.deviceMounted = false;
-    keyboardConfiguration.deviceAddress = 0;
+    keyboardConfiguration.keyboardMounted = false;
+    keyboardConfiguration.keyboardAddress = 0;
     keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[0];
+    deviceReports.deviceReportCount = 0;
+    memset(deviceReports.deviceInformation, 0, sizeof(tuh_hid_report_info_t));
     tusb_init();
 }
 
@@ -45,23 +49,73 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
 
     // Interface protocol (hid_interface_protocol_enum_t)
     uint8_t const itf_protocol = tuh_hid_interface_protocol(dev_addr, instance);
-
     keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[itf_protocol];
-    keyboardConfiguration.deviceMounted = true;
-    keyboardConfiguration.deviceAddress = dev_addr;
+
+    if (HID_ITF_PROTOCOL_KEYBOARD == itf_protocol) {
+        keyboardConfiguration.keyboardMounted = true;
+        keyboardConfiguration.keyboardAddress = dev_addr;
+    }
+
+    deviceReports.deviceReportCount = tuh_hid_parse_report_descriptor(deviceReports.deviceInformation, MAX_REPORT, desc_report, desc_len);
 }
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance) {
 
-    if (dev_addr == keyboardConfiguration.deviceAddress) {
-        keyboardConfiguration.deviceMounted = false;
-        keyboardConfiguration.deviceAddress = 0;
+    if (dev_addr == keyboardConfiguration.keyboardAddress) {
+        keyboardConfiguration.keyboardMounted = false;
+        keyboardConfiguration.keyboardAddress = 0;
         keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[0];
     }
 }
 
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance, uint8_t const* report, uint16_t len) {
+    
+    if (dev_addr != keyboardConfiguration.keyboardAddress) {
+        return;
+    }
 
+    uint8_t const rpt_count = deviceReports.deviceReportCount;
+    tuh_hid_report_info_t* rpt_info_arr = deviceReports.deviceInformation;
+    tuh_hid_report_info_t* rpt_info = NULL;
+
+    if ( rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
+        
+        // Simple report without report ID as 1st byte
+        rpt_info = &rpt_info_arr[0];
+    } else {
+        // Composite report, 1st byte is report ID, data starts from 2nd byte
+        uint8_t const rpt_id = report[0];
+
+        // Find report id in the arrray
+        for(uint8_t i=0; i<rpt_count; i++) {
+            if (rpt_id == rpt_info_arr[i].report_id ) {
+                rpt_info = &rpt_info_arr[i];
+                break;
+            }
+        }
+
+        report++;
+        len--;
+    }
+
+    if (!rpt_info) {
+        #ifdef DEBUG
+        printf("Couldn't find the report info for this report !\r\n");
+        #endif
+        return;
+    }
+
+    if ( rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP) {
+        switch (rpt_info->usage) {
+            case HID_USAGE_DESKTOP_KEYBOARD:
+            // Assume keyboard follow boot report layout
+            //process_kbd_report( (hid_keyboard_report_t const*) report );
+            break;
+
+            default:
+            break;
+        }
+    }
 }
 
 

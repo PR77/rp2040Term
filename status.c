@@ -88,7 +88,7 @@ void status_forceStatusBarUpdate(void) {
         st_conioCharacter *ch = conio_getCharacterBuffer(STATUS_BAR_ROW, i);
         assert (ch != NULL);
     
-        if (msgBuffer[i] != NULL) {
+        if (msgBuffer[i] != 0) {
             ch->locationCharacter = msgBuffer[i];
         } else {
             ch->locationCharacter = ' ';
