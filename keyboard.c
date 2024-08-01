@@ -130,18 +130,6 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instanc
     }
 }
 
-static inline bool findKeyInReport(hid_keyboard_report_t const *report, uint8_t keycode) {
-
-    for (uint8_t i = 0; i < 6; i++) {
-        // Look up new key in previous keys
-        if (report->keycode[i] == keycode) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 static inline bool findCustomKeyInReport(uint8_t keycode, uint8_t *index) {
 
     for (uint8_t i = 0; i < MAX_CUSTOM_KEY_HANDLERS; i++) {
