@@ -45,7 +45,7 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
 /**
     Get a pointer to the serial port (UART) configuration.
 
-    @param[out]    st_serialConfiguration pointer to serial port configuration structure.
+    @returns[out]  st_serialConfiguration pointer to serial port configuration structure.
 */
 st_serialConfiguration *serial_getSerialConfiguration(void) {
 

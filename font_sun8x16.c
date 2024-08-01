@@ -1,3 +1,5 @@
+#include "pico.h"
+#include "pico/stdlib.h"
 #include "font_sun8x16.h"
 
 const unsigned char fontdata_sun8x16[GLYPH_COUNT][GLYPH_HEIGHT] = {

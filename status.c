@@ -17,8 +17,7 @@
 
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
-    @param[in]     backgroundColourIndex index into palette for characters background colour.
-
+    @param[in]     invertText true if the status bar shall be inverted, otherwise false.
 */
 void status_initialiseStatusBar(e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex, bool invertText) {
 

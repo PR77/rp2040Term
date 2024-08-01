@@ -22,14 +22,8 @@ https://github.com/RC2014Z80/picoterm
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/multicore.h"
-#include "hardware/clocks.h"
-#include "hardware/irq.h"
-#include "hardware/pwm.h"
-#include "time.h"
-#include "bsp/board.h"
 #include "tusb.h"
 #include "class/hid/hid.h"
-#include "font_sun8x16.h"
 #include "main.h"
 #include "conio.h"
 #include "serial.h"
@@ -38,101 +32,7 @@ https://github.com/RC2014Z80/picoterm
 #include "system.h"
 #include "build_number.h"
 
-#define VID_CORE                1
-
 static semaphore_t videoInitialised;
-
-const scanvideo_timing_t tftLQ043Timing_480x272_50 = {
-
-    //.clock_freq = 9500000, // with set_sys_clock_khz (133000, true);
-    .clock_freq = 7812500, // with set_sys_clock_khz (125000, true);
-
-    .h_active = 480,
-    .v_active = 272,
-
-    .h_front_porch = 2,
-    .h_pulse = 96,
-    .h_total = 598,
-    .h_sync_polarity = 1,
-
-    .v_front_porch = 2,
-    .v_pulse = 2,
-    .v_total = 305,
-    .v_sync_polarity = 1,
-
-    .enable_clock = 1,
-    .clock_polarity = 1,
-
-    .enable_den = 0
-};    
-
-const scanvideo_mode_t tftLQ042_480x272_60 = {
-
-    .default_timing = &tftLQ043Timing_480x272_50,
-    .pio_program = &video_24mhz_composable,
-    .width = 480,
-    .height = 272,
-    .xscale = 1,
-    .yscale = 1,
-};            
-
-void __time_critical_func(system_renderLoop)(void) {
-    
-    int core_num = get_core_num();
-    assert (core_num >= 0 && core_num < 2);
-
-    while (true)
-    {
-        struct scanvideo_scanline_buffer *buffer = scanvideo_begin_scanline_generation(true);
-        uint16_t *pix = (uint16_t *)buffer->data;
-        uint16_t scanlineNumber = scanvideo_scanline_number(buffer->scanline_id);
-        uint8_t rowIndex = (scanlineNumber / GLYPH_HEIGHT);
-        uint8_t rowScanline = (scanlineNumber % GLYPH_HEIGHT);
-        
-        if (rowIndex > TEXT_ROWS) {
-            rowIndex -= TEXT_ROWS + 1;
-        }
-
-        pix += 2;
-        for (uint8_t columnIndex = 0; columnIndex < TEXT_COLUMNS; ++columnIndex)
-        {
-            // In this loop all glyph parts for specific scanline are rendered.
-            st_conioCharacter *ch = conio_getCharacterBuffer(rowIndex, columnIndex);
-            uint16_t foregroundColour = ch->foregroundColour;
-            uint16_t backgroundColour = ch->backgroundColour;
-            bool invert = ch->invert;
-            uint8_t fontBits = fontdata_sun8x16[ch->locationCharacter][rowScanline];
-
-            if (invert == true) {
-                fontBits = ~fontBits;
-            }
-
-            pix[0] = (fontBits & 0x80) ? foregroundColour : backgroundColour;
-            pix[1] = (fontBits & 0x40) ? foregroundColour : backgroundColour;
-            pix[2] = (fontBits & 0x20) ? foregroundColour : backgroundColour;
-            pix[3] = (fontBits & 0x10) ? foregroundColour : backgroundColour;
-            pix[4] = (fontBits & 0x08) ? foregroundColour : backgroundColour;
-            pix[5] = (fontBits & 0x04) ? foregroundColour : backgroundColour;
-            pix[6] = (fontBits & 0x02) ? foregroundColour : backgroundColour;
-            pix[7] = (fontBits & 0x01) ? foregroundColour : backgroundColour;
-            pix += GLYPH_WIDTH;
-        }
-
-        ++pix;
-        *pix = 0;
-        ++pix;
-        *pix = COMPOSABLE_EOL_ALIGN;
-        
-        pix = (uint16_t *)buffer->data;
-        pix[0] = COMPOSABLE_RAW_RUN;
-        pix[1] = pix[2];
-        pix[2] = TEXT_COLUMNS * GLYPH_WIDTH - 2;
-        buffer->data_used = (TEXT_COLUMNS * GLYPH_WIDTH + 4) / 2;
-        assert(buffer->data_used < buffer->data_max);
-
-        scanvideo_end_scanline_generation(buffer);
-    } // end while(true) loop
-}
 
 void system_initialiseScanVideo(void) {
 
@@ -146,7 +46,15 @@ int main(void) {
 
     uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
 
-    set_sys_clock_khz(125000, true);
+    /* PLL Calculations --> python vcocalc.py 123.5
+    Requested: 123.5 MHz
+    Achieved: 123.5 MHz
+    REFDIV: 2
+    FBDIV: 247 (VCO = 1482.0 MHz)
+    PD1: 6
+    PD2: 2
+    */
+    set_sys_clock_pll(1482000000, 6, 2);
 
     // Setup GPIO for LED
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -159,7 +67,13 @@ int main(void) {
     serial_initialiseTerminalUart(uart1);
     keyboard_initialiseKeyboard();
 
-    // create a semaphore to be posted when video init is complete
+    keyboard_attachCustomKeyHandler(HID_KEY_F9, &system_toggleLocalEcho, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F10, &system_decreaseBacklightByStep, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F11, &system_toggleBeeper, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F12, &system_increaseBacklightByStep, NULL);
+    //keyboard_attachDefaultKeyHandler(...)
+    
+    // Create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);
     multicore_launch_core1(system_initialiseScanVideo);
     // wait for initialization of video to be complete

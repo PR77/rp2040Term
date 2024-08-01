@@ -6,7 +6,8 @@
 #include "bsp/board.h"
 
 #define LOCALISE_DE
-#define MAX_REPORT  4
+#define MAX_REPORT              4
+#define MAX_CUSTOM_KEY_HANDLERS 6
 
 //--------------------------------------------------------------------/
  // DE keyboard
@@ -135,10 +136,23 @@ typedef struct {
 typedef struct {
     uint8_t                 deviceReportCount;
     tuh_hid_report_info_t   deviceInformation[MAX_REPORT];
-} st_deviceReports;
+} st_keyboardDeviceReports;
+
+typedef struct {
+    void                    (* keyPressedHandler)(uint8_t keyCharacter);
+    void                    (* keyReleasedHandler)(uint8_t keyCharacter);
+} st_keyboardDefaultHandler;
+
+typedef struct {
+    uint8_t                 hidKeyCode;
+    void                    (* keyPressedHandler)(void);
+    void                    (* keyReleasedHandler)(void);
+} st_keyboardCustomHandler;
 
 void keyboard_initialiseKeyboard(void);
 st_keyboardConfiguration *keyboard_getKeyboardConfiguration(void);
+bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyCharacter), void (*keyReleasedHandler)(uint8_t keyCharacter));
+bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(void), void (*keyReleasedHandler)(void));
 void keyboard_updateKeyboardTask(void);
 
 #endif // KEYBOARD_H

@@ -11,7 +11,9 @@
 #include "main.h"
 
 static st_keyboardConfiguration keyboardConfiguration;
-static st_deviceReports deviceReports;
+static st_keyboardDeviceReports keyboardDeviceReports;
+static st_keyboardDefaultHandler keyboardDefaultHandler;
+static st_keyboardCustomHandler keyboardCustomHandlers[MAX_CUSTOM_KEY_HANDLERS];
 
 static const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
 static const uint8_t keycode2ascii[128][3] =  {DE_KEYCODE_TO_ASCII};
@@ -25,19 +27,70 @@ void keyboard_initialiseKeyboard(void) {
     keyboardConfiguration.keyboardMounted = false;
     keyboardConfiguration.keyboardAddress = 0;
     keyboardConfiguration.deviceStr = (uint8_t *)protocolStrings[0];
-    deviceReports.deviceReportCount = 0;
-    memset(deviceReports.deviceInformation, 0, sizeof(tuh_hid_report_info_t));
+    keyboardDeviceReports.deviceReportCount = 0;
+    memset(keyboardDeviceReports.deviceInformation, 0, sizeof(tuh_hid_report_info_t));
+    memset(&keyboardDefaultHandler, 0, sizeof(st_keyboardDefaultHandler));
+    memset(keyboardCustomHandlers, 0, sizeof(st_keyboardCustomHandler) * MAX_CUSTOM_KEY_HANDLERS);
     tuh_init(0);
 }
 
 /**
     Get a pointer to the keyboard configuration.
 
-    @param[out]    st_keyboardConfiguration pointer to keyboard configuration structure.
+    @return[out]    st_keyboardConfiguration pointer to keyboard configuration structure.
 */
 st_keyboardConfiguration *keyboard_getKeyboardConfiguration(void) {
 
     return (&keyboardConfiguration);
+}
+
+/**
+    Attach a default key handler for presses and releases.
+
+    @param[in]     keyPressedHandler function pointer to key press handler. Can be NULL if not required.
+    @param[in]     keyReleasedHandler function pointer to key release handler. Can be NULL if not required.
+    @returns[out]  bool true if attach was successful, otherwise false.
+*/
+bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyCharacter), void (*keyReleasedHandler)(uint8_t keyCharacter)) {
+    
+    bool attachedSuccess = false;
+
+    if ((*keyPressedHandler != NULL) || (*keyReleasedHandler != NULL)) {
+        keyboardDefaultHandler.keyPressedHandler = keyPressedHandler;
+        keyboardDefaultHandler.keyReleasedHandler = keyReleasedHandler;
+        attachedSuccess = true;
+    }
+
+    return (attachedSuccess);
+}
+
+/**
+    Attach a customer key handler for presses and releases. A total of MAX_CUSTOM_KEY_HANDLERS
+    can be added.
+
+    @param[in]     hidKeyCode HID key code to map customer handler to.
+    @param[in]     keyPressedHandler function pointer to key press handler. Can be NULL if not required.
+    @param[in]     keyReleasedHandler function pointer to key release handler. Can be NULL if not required.
+    @return[out]    bool true if attach was successful, otherwise false.
+*/
+bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(void), void (*keyReleasedHandler)(void)) {
+
+    bool attachedSuccess = false;
+
+    if (HID_KEY_NONE != hidKeyCode) {
+        for (uint8_t i = 0; i < MAX_CUSTOM_KEY_HANDLERS; i++) {
+            if (keyboardCustomHandlers[i].hidKeyCode == HID_KEY_NONE) {
+                // Found an empty location, lets populate it with the handlers.
+                keyboardCustomHandlers[i].hidKeyCode = hidKeyCode;
+                keyboardCustomHandlers[i].keyPressedHandler = keyPressedHandler;
+                keyboardCustomHandlers[i].keyReleasedHandler = keyReleasedHandler;
+                attachedSuccess = true;
+                break;
+            }
+        }
+    }
+
+    return (attachedSuccess);
 }
 
 void keyboard_updateKeyboardTask(void) {
@@ -61,7 +114,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
         keyboardConfiguration.keyboardAddress = dev_addr;
     }
 
-    deviceReports.deviceReportCount = tuh_hid_parse_report_descriptor(deviceReports.deviceInformation, MAX_REPORT, desc_report, desc_len);
+    keyboardDeviceReports.deviceReportCount = tuh_hid_parse_report_descriptor(keyboardDeviceReports.deviceInformation, MAX_REPORT, desc_report, desc_len);
 
     // Request to receive report, tuh_hid_report_received_cb() will be invoked when report is available.
     // TODO: Error handling to be added if report can't be added.
@@ -77,11 +130,23 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instanc
     }
 }
 
-static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8_t keycode)
-{
-    for(uint8_t i=0; i<6; i++) {
+static inline bool findKeyInReport(hid_keyboard_report_t const *report, uint8_t keycode) {
+
+    for (uint8_t i = 0; i < 6; i++) {
         // Look up new key in previous keys
         if (report->keycode[i] == keycode) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static inline bool findCustomKeyInReport(uint8_t keycode, uint8_t *index) {
+
+    for (uint8_t i = 0; i < MAX_CUSTOM_KEY_HANDLERS; i++) {
+        if (keyboardCustomHandlers[i].hidKeyCode == keycode) {
+            *index = i;
             return true;
         }
     }
@@ -92,7 +157,7 @@ static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance, uint8_t const* report, uint16_t len) {
 
     uint8_t const itf_protocol = tuh_hid_interface_protocol(dev_addr, instance);
-     // previous reportS to check key released events.
+    // Previous reports to check key released events.
     static hid_keyboard_report_t previousReport = { 0, 0, {0} };
     hid_keyboard_report_t const *currentReport = (hid_keyboard_report_t const *)report;
 
@@ -101,36 +166,23 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {
-                if (find_key_in_report(&previousReport, currentReport->keycode[i])) {
+                if (findKeyInReport(&previousReport, currentReport->keycode[i])) {
                     // exist in previous report means the current key is holding
                 } else {
                     // not existed in previous report means the current key is pressed
-                    switch (currentReport->keycode[i]) {
-                        case HID_KEY_F9:
-                            system_toggleLocalEcho();
-                            break;
-                            
-                        case HID_KEY_F10:
-                            system_decreaseBacklightByStep();
-                            break;
+                    uint8_t customerHandlerIndex = 0;
 
-                        case HID_KEY_F11:
-                            system_toggleBeeper();
-                            break;
+                    if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
+                        assert (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler);
+                        keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler();
+                    } else {
+                        bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+                        bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                        uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
 
-                        case HID_KEY_F12:
-                            system_increaseBacklightByStep();
-                            break;
-
-                        default: {
-                            bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-                            bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
-                            uint8_t ch = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
-
-                            // TODO: Remove this, printing character to conio ONLY for testing...
-                            conio_printCharacter(ch, 1, 0);
+                        if (NULL != keyboardDefaultHandler.keyPressedHandler) {
+                            keyboardDefaultHandler.keyPressedHandler(keyCharacter);
                         }
-                        break;
                     }
                 }
             }

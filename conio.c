@@ -56,7 +56,7 @@ void conio_initialiseCharacterBuffer(e_colourPaletteIndexes foregroundColourInde
 
     @param[in]     rowIndex row index into character buffer structure.
     @param[in]     columnIndex column index into character buffer structure.
-    @param[out]    st_conioCharacter pointer to character buffer structure.
+    @returns[out]  st_conioCharacter pointer to character buffer structure.
 */
 st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnIndex) {
 
@@ -70,7 +70,7 @@ st_conioCharacter *conio_getCharacterBuffer(uint8_t rowIndex, uint8_t columnInde
     Get a PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple for a specific palette index.
 
     @param[in]     paletteIndex index into colour palette.
-    @param[out]    uint16_t PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple.
+    @returns[out]  uint16_t PICO_SCANVIDEO_PIXEL_FROM_RGB8 tripple.
 */
 uint16_t conio_getPaletteColour(e_colourPaletteIndexes paletteIndex) {
 
@@ -82,7 +82,7 @@ uint16_t conio_getPaletteColour(e_colourPaletteIndexes paletteIndex) {
 /**
     Get a pointer to the cursor position structure.
 
-    @param[out]    st_conioCursor pointer to cursor position structure.
+    @returns[out]  st_conioCursor pointer to cursor position structure.
 */
 st_conioCursor *conio_getCurrentCursorPosition(void) {
 
