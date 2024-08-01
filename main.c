@@ -71,7 +71,7 @@ int main(void) {
     keyboard_attachCustomKeyHandler(HID_KEY_F10, &system_decreaseBacklightByStep, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F11, &system_toggleBeeper, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F12, &system_increaseBacklightByStep, NULL);
-    //keyboard_attachDefaultKeyHandler(...)
+    keyboard_attachDefaultKeyHandler(&conio_printSimpleCharacter, NULL);
     
     // Create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);

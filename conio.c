@@ -8,6 +8,8 @@
 
 static st_conioCharacter conioCharacter[TEXT_ROWS][TEXT_COLUMNS];
 static st_conioCursor conioCursor;
+static uint8_t defaultForegroundColourIndex;
+static uint8_t defaultBackgroundColourIndex;
 
 const uint16_t conioPalette[MAX_PALETTE_COLOURS] = {
       PICO_SCANVIDEO_PIXEL_FROM_RGB8(0x00, 0x00, 0x00),     //black
@@ -38,6 +40,9 @@ void conio_initialiseCharacterBuffer(e_colourPaletteIndexes foregroundColourInde
     conioCursor.currentCursorColumn = 0;
     conioCursor.cursorIsVisible = false;
     conioCursor.cursorBlinkState = false;
+
+    defaultForegroundColourIndex = foregroundColourIndex;
+    defaultBackgroundColourIndex = backgroundColourIndex;
 
     for (uint8_t i = 0; i < (TEXT_ROWS); i++)
     {
@@ -298,6 +303,17 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
             }
         }
     }
+}
+
+/**
+    Print a character to the character buffer structure without any specific attributes.
+    Defaults for the foreground and background colours are used.
+
+    @param[in]     character character to be printed to screen.
+*/
+void conio_printSimpleCharacter(uint8_t character) {
+    
+    conio_printCharacter(character, defaultForegroundColourIndex, defaultBackgroundColourIndex);
 }
 
 /**

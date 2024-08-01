@@ -59,6 +59,7 @@ void conio_scrollScreenDown(void);
 
 /* Print functions */
 void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
+void conio_printSimpleCharacter(uint8_t character);
 void conio_printString(uint8_t *string_p, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
 
 #endif // CONIO_H
