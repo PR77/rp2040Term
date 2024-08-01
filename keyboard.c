@@ -93,6 +93,9 @@ bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(
     return (attachedSuccess);
 }
 
+/**
+    Cyclic function to handle keyboard and USB handling.
+*/
 void keyboard_updateKeyboardTask(void) {
 
     if (true == tusb_inited()) {
