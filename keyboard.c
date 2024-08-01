@@ -166,25 +166,40 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {
-                if (findKeyInReport(&previousReport, currentReport->keycode[i])) {
-                    // exist in previous report means the current key is holding
-                } else {
-                    // not existed in previous report means the current key is pressed
-                    uint8_t customerHandlerIndex = 0;
-
-                    if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
-                        assert (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler);
+                // If keycode in current Report is != 0 current key is pressed.
+                uint8_t customerHandlerIndex = 0;
+                if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
+                    if (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler) {
                         keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler();
-                    } else {
-                        bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-                        bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
-                        uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
+                    }
+                } else {
+                    bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+                    bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                    uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
 
-                        if (NULL != keyboardDefaultHandler.keyPressedHandler) {
-                            keyboardDefaultHandler.keyPressedHandler(keyCharacter);
-                        }
+                    if (NULL != keyboardDefaultHandler.keyPressedHandler) {
+                        keyboardDefaultHandler.keyPressedHandler(keyCharacter);
                     }
                 }
+            } else if (previousReport.keycode[i] != 0) {
+                // ... else if keycode in previous Report is != 0 current key is released.
+                uint8_t customerHandlerIndex = 0;
+
+                if (true == findCustomKeyInReport(previousReport.keycode[i], &customerHandlerIndex)) {
+                    if (NULL != keyboardCustomHandlers[customerHandlerIndex].keyReleasedHandler) {
+                        keyboardCustomHandlers[customerHandlerIndex].keyReleasedHandler();
+                    }
+                } else {
+                    if (NULL != keyboardDefaultHandler.keyReleasedHandler) {
+                        bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+                        bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                        uint8_t keyCharacter = keycode2ascii[previousReport.keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
+
+                        keyboardDefaultHandler.keyReleasedHandler(keyCharacter);
+                    }
+                }
+            } else {
+                // ... Do nothing
             }
         }
 
