@@ -176,7 +176,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {
-                // If keycode in current Report is != 0 current key is pressed.
+                // If keycode in current report is != 0 current key is pressed.
                 uint8_t customerHandlerIndex = 0;
                 if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
                     if (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler) {
@@ -196,12 +196,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
                         }
                     }
 
+                    // Check if there is a default key handler and call it if assigned.
                     if (NULL != keyboardDefaultHandler.keyPressedHandler) {
                         keyboardDefaultHandler.keyPressedHandler(keyCharacter);
                     }
                 }
             } else if (previousReport.keycode[i] != 0) {
-                // ... else if keycode in previous Report is != 0 current key is released.
+                // ... else if keycode in previous report is != 0 current key is released.
                 uint8_t customerHandlerIndex = 0;
 
                 if (true == findCustomKeyInReport(previousReport.keycode[i], &customerHandlerIndex)) {
