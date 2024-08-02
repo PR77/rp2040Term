@@ -39,6 +39,7 @@ void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
 void system_onPwmWrap(void);
 void system_executeSystemReset(void);
+void system_handleKeyboardAndUartTransmitRouting(uint8_t character);
 void __time_critical_func(system_renderLoop)(void);
 
 

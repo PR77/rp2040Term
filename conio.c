@@ -4,7 +4,6 @@
 #include "time.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
-#include "serial.h"
 #include "conio.h"
 
 static st_conioCharacter conioCharacter[TEXT_ROWS][TEXT_COLUMNS];
@@ -285,7 +284,12 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
 
         if ((character == '\n') && (cursorPosition->currentCursorRow <= (TEXT_ROWS_VISIBLE - 1))) {
             cursorPosition->currentCursorRow++;
-        }
+
+            if (cursorPosition->currentCursorRow >= TEXT_ROWS_VISIBLE) {
+                conio_scrollScreenUp();
+                cursorPosition->currentCursorRow--;
+            }
+        } 
 
         if ((character == '\t') && (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS_VISIBLE - 4))) {
             cursorPosition->currentCursorColumn += 4;
@@ -327,17 +331,6 @@ void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundCo
 }
 
 /**
-    Print a character to the character buffer structure without any specific attributes.
-    Defaults for the foreground and background colours are used.
-
-    @param[in]     character character to be printed to screen.
-*/
-void conio_printSimpleCharacter(uint8_t character) {
-    
-    conio_printCharacter(character, defaultForegroundColourIndex, defaultBackgroundColourIndex);
-}
-
-/**
     Print a string to the character buffer structure with specific attributes.
 
     @param[in]     string_p string to be printed to screen.
@@ -350,5 +343,32 @@ void conio_printString(uint8_t *string_p, e_colourPaletteIndexes foregroundColou
 
     while(*string_p) {
         conio_printCharacter(*string_p++, foregroundColourIndex, backgroundColourIndex);  
+    }
+}
+
+/**
+    Print a character to the character buffer structure without any specific attributes.
+    Defaults for the foreground and background colours are used.
+
+    @param[in]     character character to be printed to screen.
+*/
+void conio_printSimpleCharacter(uint8_t character) {
+    
+    conio_printCharacter(character, defaultForegroundColourIndex, defaultBackgroundColourIndex);
+}
+
+/**
+    Print a string to the character buffer structure without any specific attributes.
+    Defaults for the foreground and background colours are used.
+
+    @param[in]     string_p string to be printed to screen.
+*/
+
+void conio_printSimpleString(uint8_t *string_p) {
+    
+    assert (string_p != NULL);
+
+    while(*string_p) {
+        conio_printSimpleCharacter(*string_p++);  
     }
 }

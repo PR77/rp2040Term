@@ -74,9 +74,7 @@ int main(void) {
     keyboard_attachCustomKeyHandler(HID_KEY_F10, &system_decreaseBacklightByStep, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F11, &system_toggleLocalEcho, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F12, &system_increaseBacklightByStep, NULL);
-
-    // TODO: Key release handler linked to UART send character only for testing UART TX routines.
-    keyboard_attachDefaultKeyHandler(&conio_printSimpleCharacter, &serial_uartSendCharacter);
+    keyboard_attachDefaultKeyHandler(&system_handleKeyboardAndUartTransmitRouting, NULL);
     
     // Create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);

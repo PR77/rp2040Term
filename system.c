@@ -9,6 +9,7 @@
 #include "font_sun8x16.h"
 #include "conio.h"
 #include "system.h"
+#include "serial.h"
 
 static st_systemConfiguration systemConfiguration;
 
@@ -144,13 +145,30 @@ void system_onPwmWrap(void) {
 }
 
 /**
-    PSystem reset handler. Execute software triggered system reset.
+    System reset handler. Execute software triggered system reset.
 */
 void system_executeSystemReset(void) {
 
     watchdog_reboot(0, 0, 0);
 }
 
+/**
+    Keyboard and UART transmit routing handler. This is used to handle printing
+    to conio (if local echo is enable) and sending the character data from
+    keyboard entry to UART tramit buffer.
+*/
+void system_handleKeyboardAndUartTransmitRouting(uint8_t character) {
+
+    serial_uartSendCharacter(character);
+
+    if (true == systemConfiguration.localEcho) {
+        conio_printSimpleCharacter(character);    
+    }
+
+    if ((true == systemConfiguration.insertLineFeedOnCarriageReturn) && (character == '\r')) {
+        conio_printSimpleString("\r\n");
+    }
+}
 
 /**
     Main render loop for scan video. Executed on VIDEO_RENDERING_CORE core.
