@@ -6,6 +6,9 @@
 #include "serial.h"
 
 static st_serialConfiguration serialConfiguration;
+static st_serialBuffer serialTransmitBuffer; 
+
+static void serial_uartInterruptHandler(void);
 
 /**
     Initialise serial UART point and support data structures.
@@ -15,6 +18,8 @@ static st_serialConfiguration serialConfiguration;
 void serial_initialiseTerminalUart(uart_inst_t *uartId) {
 
     assert (uartId != NULL);
+
+    serial_bufferInitialise(&serialTransmitBuffer);
     
     serialConfiguration.uartId = uartId;
     serialConfiguration.baudRate = UART_BAUD_RATE;
@@ -35,10 +40,10 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
     int UART_IRQ = (uartId == uart0) ? UART0_IRQ : UART1_IRQ;
 
     // Set up and enable the RX interrupt handler
-    irq_set_exclusive_handler(UART_IRQ, serial_uartReceiveHandler);
+    irq_set_exclusive_handler(UART_IRQ, serial_uartInterruptHandler);
     irq_set_enabled(UART_IRQ, true);
 
-    // Enable the UART
+    // Enable the UART RX interrupt by default, TX enabled on when data needs to be sent.
     uart_set_irq_enables(uartId, true, false);
 }
 
@@ -52,11 +57,110 @@ st_serialConfiguration *serial_getSerialConfiguration(void) {
     return (&serialConfiguration);
 }
 
+void serial_bufferInitialise(st_serialBuffer *serialBuffer) {
+
+    assert (serialBuffer != NULL);
+
+    memset(serialBuffer, 0, sizeof(st_serialBuffer));
+}
+
+bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character) {
+    
+    bool insertSuccess = false;
+
+    assert (serialBuffer != NULL);
+
+    // Some of the buffer code taken from
+    // https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
+
+    if (serialBuffer->full == false) {
+        serialBuffer->buffer[serialBuffer->headIndex++] = character;
+
+        if (serialBuffer->headIndex == UART_BUFFER_SIZE) {
+            serialBuffer->headIndex = 0;    
+        }
+
+        insertSuccess = true;
+    }
+
+    serialBuffer->full = (serialBuffer->headIndex == serialBuffer->tailIndex);
+
+    return (insertSuccess);
+}
+
+bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character) {
+
+    bool removedSuccess = false;
+
+    assert (serialBuffer != NULL);
+
+    // Some of the buffer code taken from
+    // https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
+
+    if ((serialBuffer->full == false) && (serialBuffer->headIndex != serialBuffer->tailIndex)) {
+        *character = serialBuffer->buffer[serialBuffer->tailIndex++];
+
+        serialBuffer->full = false;
+
+        if (serialBuffer->tailIndex == UART_BUFFER_SIZE) {
+            serialBuffer->tailIndex = 0;    
+        }
+
+        removedSuccess = true;
+    }
+
+    return (removedSuccess);
+}
+
 /**
-    UART receive data interrupt handler.
+    Sends a character out the configured UART. This is non blocking as the character
+    is pushed directly into a buffer and transmission is started.
+
+    @param[in]     character character to send via UART device.
+    @returns[out]  bool to indicate transmit was successfully queued in buffer.
+
 */
-void serial_uartReceiveHandler(void) {
-    while (uart_is_readable_within_us(serialConfiguration.uartId, UART_TIMEOUT_US)) {
+bool serial_uartSendCharacter(uint8_t character) {
+
+    bool insertSuccess = false;
+
+    insertSuccess = serial_bufferPutCharacter(&serialTransmitBuffer, character);
+
+    if ((insertSuccess == true) && (uart_is_writable(serialConfiguration.uartId) == true)) {
+        uint8_t characterToSend = 0;
+
+        uart_set_irq_enables(serialConfiguration.uartId, true, true);
+
+        // Now trigger the transmit interrupts by pushing a character out. Lets just call
+        // the interrupt handler as this will do the transmission.
+        serial_uartInterruptHandler();
+    }
+ 
+    return (insertSuccess);
+}
+
+/**
+    UART interrupt handler - handles both receiving and transmitting.
+*/
+static void serial_uartInterruptHandler(void) {
+
+    // Handle receive interrupts
+    if (uart_is_readable(serialConfiguration.uartId) == true) {
+
+        // TODO: MOVE THIS CONNECTION OF CONIO OUT OF SERIAL HANDLER AND INTO MAIN. PERHAPS
+        // ADD CALLBACK HANDLERS.
         conio_printCharacter(uart_getc(serialConfiguration.uartId), PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    }
+
+    // Handle transmit interrupts
+    if (uart_is_writable(serialConfiguration.uartId) == true) {
+        uint8_t characterToSend = 0;
+
+        if (serial_bufferGetCharacter(&serialTransmitBuffer, &characterToSend) == true) {
+            uart_putc_raw(serialConfiguration.uartId, characterToSend);
+        } else {
+            // Done transmitting all data in buffer. TX interrupts are now disabled.
+            uart_set_irq_enables(serialConfiguration.uartId, true, false);    
+        }
     }
 }

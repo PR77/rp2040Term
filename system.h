@@ -24,6 +24,7 @@
 typedef struct {
     bool    beeper;
     bool    localEcho;
+    bool    insertLineFeedOnCarriageReturn;
     uint8_t lcdBacklightValue;
 } st_systemConfiguration;
 
@@ -33,9 +34,11 @@ void system_initialiseSystem(void);
 st_systemConfiguration *system_getSystemConfiguration(void);
 void system_toggleBeeper(void);
 void system_toggleLocalEcho(void);
+void system_toggleCRLF(void);
 void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
 void system_onPwmWrap(void);
+void system_executeSystemReset(void);
 void __time_critical_func(system_renderLoop)(void);
 
 

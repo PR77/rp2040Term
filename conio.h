@@ -57,6 +57,9 @@ void conio_hideCursor(void);
 void conio_scrollScreenUp(void);
 void conio_scrollScreenDown(void);
 
+/* Screen functions */
+void conio_clearScreenHomeCursor(void);
+
 /* Print functions */
 void conio_printCharacter(uint8_t character, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex);
 void conio_printSimpleCharacter(uint8_t character);

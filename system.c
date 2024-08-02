@@ -3,6 +3,7 @@
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "hardware/clocks.h"
+#include "hardware/watchdog.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
 #include "font_sun8x16.h"
@@ -99,6 +100,14 @@ void system_toggleLocalEcho(void) {
 }
 
 /**
+    Toggle inserting line feed when carriage return is detected.
+*/
+void system_toggleCRLF(void) {
+
+    systemConfiguration.insertLineFeedOnCarriageReturn ^= true;
+}
+
+/**
     Increase backlight value by 1 step size.
 */
 void system_increaseBacklightByStep(void) {
@@ -133,6 +142,15 @@ void system_onPwmWrap(void) {
 
     pwm_set_gpio_level(LCD_BACKLIGHT_PWM_PIN, targetPwmValue);
 }
+
+/**
+    PSystem reset handler. Execute software triggered system reset.
+*/
+void system_executeSystemReset(void) {
+
+    watchdog_reboot(0, 0, 0);
+}
+
 
 /**
     Main render loop for scan video. Executed on VIDEO_RENDERING_CORE core.

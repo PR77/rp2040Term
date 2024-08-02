@@ -4,6 +4,7 @@
 #include "time.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
+#include "serial.h"
 #include "conio.h"
 
 static st_conioCharacter conioCharacter[TEXT_ROWS][TEXT_COLUMNS];
@@ -239,6 +240,26 @@ void conio_scrollScreenDown(void) {
         assert (ch != NULL);
     
         ch->locationCharacter = ' ';
+    }
+}
+
+/**
+    Clear the entire screen and move the cursor back to home position.
+*/
+void conio_clearScreenHomeCursor(void) {
+    
+    conioCursor.currentCursorRow = 0;
+    conioCursor.currentCursorColumn = 0;
+
+    for (uint8_t i = 0; i < (TEXT_ROWS_VISIBLE); i++)
+    {
+        for (uint8_t j = 0; j < (TEXT_COLUMNS); j++)
+        {
+            conioCharacter[i][j].foregroundColour = conio_getPaletteColour(defaultForegroundColourIndex);
+            conioCharacter[i][j].backgroundColour = conio_getPaletteColour(defaultBackgroundColourIndex);
+            conioCharacter[i][j].locationCharacter = ' ';
+            conioCharacter[i][j].invert = false;
+        }
     }
 }
 

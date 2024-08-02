@@ -139,6 +139,10 @@ typedef struct {
 } st_keyboardDeviceReports;
 
 typedef struct {
+    void                    (* keyPressedHandler)(void);
+} st_keyboardSystemResetHandler;
+
+typedef struct {
     void                    (* keyPressedHandler)(uint8_t keyCharacter);
     void                    (* keyReleasedHandler)(uint8_t keyCharacter);
 } st_keyboardDefaultHandler;
@@ -153,6 +157,7 @@ void keyboard_initialiseKeyboard(void);
 st_keyboardConfiguration *keyboard_getKeyboardConfiguration(void);
 bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyCharacter), void (*keyReleasedHandler)(uint8_t keyCharacter));
 bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(void), void (*keyReleasedHandler)(void));
+bool keyboard_attachSystemResetHandler(void (*keyPressedHandler)(void));
 void keyboard_updateKeyboardTask(void);
 
 #endif // KEYBOARD_H

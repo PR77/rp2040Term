@@ -67,11 +67,16 @@ int main(void) {
     serial_initialiseTerminalUart(uart1);
     keyboard_initialiseKeyboard();
 
-    keyboard_attachCustomKeyHandler(HID_KEY_F9, &system_toggleLocalEcho, NULL);
+    keyboard_attachSystemResetHandler(&system_executeSystemReset);
+    keyboard_attachCustomKeyHandler(HID_KEY_F1, &conio_clearScreenHomeCursor, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F8, &system_toggleBeeper, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F9, &system_toggleCRLF, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F10, &system_decreaseBacklightByStep, NULL);
-    keyboard_attachCustomKeyHandler(HID_KEY_F11, &system_toggleBeeper, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F11, &system_toggleLocalEcho, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F12, &system_increaseBacklightByStep, NULL);
-    keyboard_attachDefaultKeyHandler(&conio_printSimpleCharacter, NULL);
+
+    // TODO: Key release handler linked to UART send character only for testing UART TX routines.
+    keyboard_attachDefaultKeyHandler(&conio_printSimpleCharacter, &serial_uartSendCharacter);
     
     // Create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);

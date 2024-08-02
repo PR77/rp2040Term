@@ -13,16 +13,28 @@
 #define UART_STOP_BITS          1
 #define UART_TIMEOUT_US         500
 
+#define UART_BUFFER_SIZE        TEXT_COLUMNS_VISIBLE
+
 typedef struct {
-    uart_inst_t     *uartId;
-    uint32_t        baudRate;
-    uint8_t         dataBits;
-    uint8_t         stopBits;
-    uart_parity_t   parity;
+    uart_inst_t         *uartId;
+    uint32_t            baudRate;
+    uint8_t             dataBits;
+    uint8_t             stopBits;
+    uart_parity_t       parity;
 } st_serialConfiguration;
+
+typedef struct {
+    uint8_t             buffer[UART_BUFFER_SIZE];
+    volatile uint8_t    headIndex;
+    volatile uint8_t    tailIndex;
+    bool                full;
+} st_serialBuffer;
 
 void serial_initialiseTerminalUart(uart_inst_t *uartId);
 st_serialConfiguration *serial_getSerialConfiguration(void);
-void serial_uartReceiveHandler(void);
+void serial_bufferInitialise(st_serialBuffer *serialBuffer);
+bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character);
+bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character);
+bool serial_uartSendCharacter(uint8_t character);
 
 #endif // SERIAL_H

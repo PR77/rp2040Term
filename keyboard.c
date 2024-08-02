@@ -13,6 +13,7 @@
 static st_keyboardConfiguration keyboardConfiguration;
 static st_keyboardDeviceReports keyboardDeviceReports;
 static st_keyboardDefaultHandler keyboardDefaultHandler;
+static st_keyboardSystemResetHandler keyboardSystemResetHandler;
 static st_keyboardCustomHandler keyboardCustomHandlers[MAX_CUSTOM_KEY_HANDLERS];
 
 static const char* protocolStrings[] = { "None", "Keyboard", "Mouse" };
@@ -71,7 +72,7 @@ bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyChara
     @param[in]     hidKeyCode HID key code to map customer handler to.
     @param[in]     keyPressedHandler function pointer to key press handler. Can be NULL if not required.
     @param[in]     keyReleasedHandler function pointer to key release handler. Can be NULL if not required.
-    @return[out]    bool true if attach was successful, otherwise false.
+    @return[out]   bool true if attach was successful, otherwise false.
 */
 bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(void), void (*keyReleasedHandler)(void)) {
 
@@ -88,6 +89,24 @@ bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(
                 break;
             }
         }
+    }
+
+    return (attachedSuccess);
+}
+
+/**
+    Attach a customer reset handler executing system resets via CTRL-ALT-DEL combination.
+    
+    @param[in]     keyPressedHandler function pointer to system reset handler. Can be NULL if not required.
+    @return[out]   bool true if attach was successful, otherwise false.
+*/
+bool keyboard_attachSystemResetHandler(void (*keyPressedHandler)(void)) {
+
+    bool attachedSuccess = false;
+
+    if (*keyPressedHandler != NULL) {
+        keyboardSystemResetHandler.keyPressedHandler = keyPressedHandler;
+        attachedSuccess = true;
     }
 
     return (attachedSuccess);
@@ -166,7 +185,16 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
                 } else {
                     bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
                     bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                    bool const is_ctrl = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTCTRL);
+                    bool const is_leftalt = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTALT);
                     uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
+
+                    if ((is_ctrl == true) && (is_leftalt == true) && (currentReport->keycode[i] == HID_KEY_DELETE)) {
+                        // Three finger salute detected, lets call whatever has been attached.
+                        if (NULL != keyboardSystemResetHandler.keyPressedHandler) {
+                            keyboardSystemResetHandler.keyPressedHandler();
+                        }
+                    }
 
                     if (NULL != keyboardDefaultHandler.keyPressedHandler) {
                         keyboardDefaultHandler.keyPressedHandler(keyCharacter);

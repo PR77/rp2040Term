@@ -55,7 +55,7 @@ void status_forceStatusBarUpdate(void) {
 
 	// 012345678901234567890123456789012345678901234567890123456789
 	// |        |         |         |         |         |         |
-    // AAAAAA BCD, Map EE, BL FFF%, Beeper GGG, HHHH, USB: IIIIIIII
+    // AAAAAA BCD, Map EE, BL FFF%, GGGG, HHHH, IIII, USB: JJJJJJJJ
     //
     //     AAAAAA = Baudrate (6 characters fixed length)                                                 
     //          B = Databits (1 character fixed length)
@@ -63,9 +63,10 @@ void status_forceStatusBarUpdate(void) {
     //          D = Databits (1 character fixed length)
     //         EE = Keymap (2 characters fixed length)
     //        FFF = LCD Backlight percentage (3 characters fixed length)
-    //        GGG = Beeper / sounds on or off (3 characters fixed length)
-    //       HHHH = Local Echo (4 characters fixed length)
-    //   IIIIIIII = USB details (8 characters fixed length)
+    //       GGGG = Beeper / sounds on or off (4 characters fixed length)
+    //       HHHH = CR/LF insertion (4 characters fixed length)
+    //       IIII = Local Echo (4 characters fixed length)
+    //   JJJJJJJJ = USB details (8 characters fixed length)
 
     uint8_t serialParity = '?';
 	switch (serial->parity) {
@@ -84,7 +85,8 @@ void status_forceStatusBarUpdate(void) {
     snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "Map ");
     snprintf(&msgBuffer[16], (TEXT_COLUMNS_VISIBLE - 16), "%s, ", KEYMAP);
     snprintf(&msgBuffer[20], (TEXT_COLUMNS_VISIBLE - 20), "BL %03d%%, ", system->lcdBacklightValue);
-    snprintf(&msgBuffer[29], (TEXT_COLUMNS_VISIBLE - 29), "Beeper %s, ", (system->beeper == true) ? " On" : "Off");
+    snprintf(&msgBuffer[29], (TEXT_COLUMNS_VISIBLE - 29), "%s, ", (system->beeper == true) ? "Beep" : "    ");
+    snprintf(&msgBuffer[35], (TEXT_COLUMNS_VISIBLE - 35), "%s, ", (system->insertLineFeedOnCarriageReturn == true) ? "CRLF" : "    ");
     snprintf(&msgBuffer[41], (TEXT_COLUMNS_VISIBLE - 41), "%s, ", (system->localEcho == true) ? "Echo" : "    ");
     snprintf(&msgBuffer[47], (TEXT_COLUMNS_VISIBLE - 47 + 1), "USB: %s", keyboard->deviceStr);
 
