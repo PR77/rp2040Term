@@ -8,8 +8,8 @@
 #include "hardware/pwm.h"
 #include "font_sun8x16.h"
 #include "conio.h"
-#include "system.h"
 #include "serial.h"
+#include "system.h"
 
 static st_systemConfiguration systemConfiguration;
 

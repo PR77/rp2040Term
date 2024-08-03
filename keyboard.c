@@ -1,14 +1,9 @@
 #include "pico.h"
 #include "pico/stdlib.h"
 #include "string.h"
-#include "time.h"
-#include "bsp/board.h"
 #include "tusb.h"
 #include "class/hid/hid.h"
-#include "conio.h"
 #include "keyboard.h"
-#include "system.h"
-#include "main.h"
 
 static st_keyboardConfiguration keyboardConfiguration;
 static st_keyboardDeviceReports keyboardDeviceReports;
