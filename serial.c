@@ -2,7 +2,6 @@
 #include "pico/stdlib.h"
 #include "string.h"
 #include "time.h"
-#include "conio.h"
 #include "serial.h"
 
 static st_serialConfiguration serialConfiguration;
