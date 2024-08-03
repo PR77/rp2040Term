@@ -30,11 +30,16 @@ typedef struct {
     bool                full;
 } st_serialBuffer;
 
+typedef struct {
+    void                (* characterHandler)(uint8_t character);
+} st_receivedCharacterHandler;
+
 void serial_initialiseTerminalUart(uart_inst_t *uartId);
 st_serialConfiguration *serial_getSerialConfiguration(void);
 void serial_bufferInitialise(st_serialBuffer *serialBuffer);
 bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character);
 bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character);
 bool serial_uartSendCharacter(uint8_t character);
+bool serial_attachReceivedCharacterHandler(void (*characterHandler)(uint8_t character));
 
 #endif // SERIAL_H

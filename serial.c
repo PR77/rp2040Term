@@ -6,7 +6,8 @@
 #include "serial.h"
 
 static st_serialConfiguration serialConfiguration;
-static st_serialBuffer serialTransmitBuffer; 
+static st_serialBuffer serialTransmitBuffer;
+static st_receivedCharacterHandler receivedCharacterHandler;
 
 static void serial_uartInterruptHandler(void);
 
@@ -20,6 +21,8 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
     assert (uartId != NULL);
 
     serial_bufferInitialise(&serialTransmitBuffer);
+
+    memset(&receivedCharacterHandler, 0, sizeof(st_receivedCharacterHandler));
     
     serialConfiguration.uartId = uartId;
     serialConfiguration.baudRate = UART_BAUD_RATE;
@@ -140,6 +143,25 @@ bool serial_uartSendCharacter(uint8_t character) {
 }
 
 /**
+    Attach a custom handler which is called whenever a character is received from
+    the UART interface.
+    
+    @param[in]     characterHandler function pointer to character handler. Can be NULL if not required.
+    @return[out]   bool true if attach was successful, otherwise false.
+*/
+bool serial_attachReceivedCharacterHandler(void (*characterHandler)(uint8_t character)) {
+
+    bool attachedSuccess = false;
+
+    if (*characterHandler != NULL) {
+        receivedCharacterHandler.characterHandler = characterHandler;
+        attachedSuccess = true;
+    }
+
+    return (attachedSuccess);
+}
+
+/**
     UART interrupt handler - handles both receiving and transmitting.
 */
 static void serial_uartInterruptHandler(void) {
@@ -147,9 +169,11 @@ static void serial_uartInterruptHandler(void) {
     // Handle receive interrupts
     if (uart_is_readable(serialConfiguration.uartId) == true) {
 
-        // TODO: MOVE THIS CONNECTION OF CONIO OUT OF SERIAL HANDLER AND INTO MAIN. PERHAPS
-        // ADD CALLBACK HANDLERS.
-        conio_printCharacter(uart_getc(serialConfiguration.uartId), PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+        uint8_t character = uart_getc(serialConfiguration.uartId);
+
+        if (NULL != receivedCharacterHandler.characterHandler) {
+            receivedCharacterHandler.characterHandler(character);
+        }
     }
 
     // Handle transmit interrupts

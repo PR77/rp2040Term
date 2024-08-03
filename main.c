@@ -64,9 +64,11 @@ int main(void) {
     system_initialiseSystem();
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     status_initialiseStatusBar(PALETTE_COLOUR_GREEN_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
-    serial_initialiseTerminalUart(uart1);
-    keyboard_initialiseKeyboard();
 
+    serial_initialiseTerminalUart(uart1);
+    serial_attachReceivedCharacterHandler(&conio_printSimpleCharacter);
+
+    keyboard_initialiseKeyboard();
     keyboard_attachSystemResetHandler(&system_executeSystemReset);
     keyboard_attachCustomKeyHandler(HID_KEY_F1, &conio_clearScreenHomeCursor, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F8, &system_toggleBeeper, NULL);

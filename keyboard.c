@@ -32,6 +32,7 @@ void keyboard_initialiseKeyboard(void) {
     memset(keyboardDeviceReports.deviceInformation, 0, sizeof(tuh_hid_report_info_t));
     memset(&keyboardDefaultHandler, 0, sizeof(st_keyboardDefaultHandler));
     memset(keyboardCustomHandlers, 0, sizeof(st_keyboardCustomHandler) * MAX_CUSTOM_KEY_HANDLERS);
+    memset(&keyboardSystemResetHandler, 0, sizeof(st_keyboardSystemResetHandler));
     tuh_init(0);
 }
 
@@ -66,7 +67,7 @@ bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyChara
 }
 
 /**
-    Attach a customer key handler for presses and releases. A total of MAX_CUSTOM_KEY_HANDLERS
+    Attach a custom key handler for presses and releases. A total of MAX_CUSTOM_KEY_HANDLERS
     can be added.
 
     @param[in]     hidKeyCode HID key code to map customer handler to.
@@ -95,7 +96,7 @@ bool keyboard_attachCustomKeyHandler(uint hidKeyCode, void (*keyPressedHandler)(
 }
 
 /**
-    Attach a customer reset handler executing system resets via CTRL-ALT-DEL combination.
+    Attach a custom reset handler executing system resets via CTRL-ALT-DEL combination.
     
     @param[in]     keyPressedHandler function pointer to system reset handler. Can be NULL if not required.
     @return[out]   bool true if attach was successful, otherwise false.
