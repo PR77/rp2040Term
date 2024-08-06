@@ -12,6 +12,11 @@
 #define LCD_BACKLIGHTING_STEP_SIZE  10
 #define LCD_BACKLIGHTING_DEFAULT    70
 
+#define SOUND_OUTPUT_PIN            27
+#define SOUND_OUTPUT_SAMPLE_RATE    22050
+
+#define LED_FLASH_INTERVAL_MS       500
+
 #define VIDEO_RENDERING_CORE        1
 
 /* Information on LCD Pixel Clock
@@ -31,6 +36,7 @@ typedef struct {
 extern const scanvideo_mode_t tftLQ042_480x272_60;
 
 void system_initialiseSystem(void);
+void system_initialiseAudioPlayer(void);
 st_systemConfiguration *system_getSystemConfiguration(void);
 void system_toggleBeeper(void);
 void system_toggleLocalEcho(void);
@@ -41,6 +47,9 @@ void system_onPwmWrap(void);
 void system_executeSystemReset(void);
 void system_handleKeyboardAndUartTransmitRouting(uint8_t character);
 void __time_critical_func(system_renderLoop)(void);
+void system_updateLedTask(void);
+void system_updateBellTask(void);
+
 
 
 #endif // SYSTEM_H

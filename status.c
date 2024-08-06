@@ -117,19 +117,3 @@ void status_updateStatusBarTask(void) {
         status_forceStatusBarUpdate();
     }
 }
-
-/**
-    Cyclic function to handle status / heartbeat LED flashing.
-*/
-void status_updateLedTask(void) {
-    static uint64_t previousTime = 0;
-    static bool currentLedState = false;
-
-    // Blink every interval ms
-    if ((to_ms_since_boot(get_absolute_time()) - previousTime) > LED_FLASH_INTERVAL_MS) {
-        previousTime += LED_FLASH_INTERVAL_MS;
-        
-        gpio_put(PICO_DEFAULT_LED_PIN, currentLedState);
-        currentLedState ^= true;
-    }
-}

@@ -36,6 +36,8 @@ add_executable(rp2040Term
   keyboard.c
   font_sun8x16.c)
 
+add_subdirectory(RP2040-PWM-DMA-Audio)
+
 target_compile_definitions(rp2040Term PUBLIC 
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=250
   PICO_SCANVIDEO_ENABLE_CLOCK_PIN
@@ -59,6 +61,7 @@ pico_add_extra_outputs(rp2040Term)
 target_link_libraries(rp2040Term PRIVATE
   pico_stdlib
   pico_scanvideo_dpi
+  pwm_dma_audio
   pico_multicore
   hardware_pwm
   tinyusb_host

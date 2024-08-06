@@ -84,6 +84,10 @@ int main(void) {
     // wait for initialization of video to be complete
     sem_acquire_blocking(&videoInitialised);
 
+    // Audio playback needs to be initialised after scanvideo due to DMA assignments.
+    // Scanvideo requires DMA Channels 0 + 1, and will fail if not available.
+    system_initialiseAudioPlayer();
+
 	//                 012345678901234567890123456789012345678901234567890123456789
 	//                 |        |         |         |         |         |         |
     conio_printString("--------------------------------[RP2040Term TFT - By PR77]--", PALETTE_COLOUR_YELLOW_INDEX, PALETTE_COLOUR_BLACK_INDEX);
@@ -106,9 +110,10 @@ int main(void) {
     conio_enableCursor();
 
     while (true) {
-        status_updateLedTask();
+        system_updateLedTask();
         conio_updateCursorTask();
         status_updateStatusBarTask();
         keyboard_updateKeyboardTask();
+        system_updateBellTask();
     }
 }

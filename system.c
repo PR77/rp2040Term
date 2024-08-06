@@ -6,6 +6,8 @@
 #include "hardware/watchdog.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
+#include "RP2040-PWM-DMA-Audio/audio.h"
+#include "StartupAppleII.h"
 #include "font_sun8x16.h"
 #include "conio.h"
 #include "serial.h"
@@ -71,7 +73,16 @@ void system_initialiseSystem(void) {
     // Set divider, reduces counter clock to sysclock/this value
     pwm_config_set_clkdiv(&config, 10.f);
     // Load the configuration into our PWM slice, and set it running.
-    pwm_init(slice_num, &config, true);
+    pwm_init(slice_num, &config, true);   
+}
+
+void system_initialiseAudioPlayer(void) {
+
+    // Beep audio sample taken from https://froods.ca/~dschaub/sound.html.
+    // Check Tools folder for HTML converter based on bitluni's audio to header converter. Original
+    // can be found here https://bitluni.net/wp-content/uploads/2018/01/Audio2Header.html.
+
+    audio_init(SOUND_OUTPUT_PIN, SOUND_OUTPUT_SAMPLE_RATE);
 }
 
 /**
@@ -90,6 +101,10 @@ st_systemConfiguration *system_getSystemConfiguration(void) {
 void system_toggleBeeper(void) {
 
     systemConfiguration.beeper ^= true;
+
+    if (true == systemConfiguration.beeper) {
+        audio_play_once(samples, sizeof(samples));    
+    }
 }
 
 /**
@@ -279,4 +294,28 @@ void __time_critical_func(system_renderLoop)(void) {
 
         scanvideo_end_scanline_generation(buffer);
     } // end while(true) loop
+}
+
+/**
+    Cyclic function to handle status / heartbeat LED flashing.
+*/
+void system_updateLedTask(void) {
+    static uint64_t previousTime = 0;
+    static bool currentLedState = false;
+
+    // Blink every interval ms
+    if ((to_ms_since_boot(get_absolute_time()) - previousTime) > LED_FLASH_INTERVAL_MS) {
+        previousTime += LED_FLASH_INTERVAL_MS;
+        
+        gpio_put(PICO_DEFAULT_LED_PIN, currentLedState);
+        currentLedState ^= true;
+    }
+}
+
+/**
+    Cyclic function to handle bell task.
+*/
+void system_updateBellTask(void) {
+
+    audio_mixer_step();
 }
