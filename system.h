@@ -13,7 +13,6 @@
 #define LCD_BACKLIGHTING_DEFAULT    70
 
 #define SOUND_OUTPUT_PIN            27
-#define SOUND_OUTPUT_SAMPLE_RATE    22050
 
 #define LED_FLASH_INTERVAL_MS       500
 

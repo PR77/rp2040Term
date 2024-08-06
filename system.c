@@ -82,7 +82,7 @@ void system_initialiseAudioPlayer(void) {
     // Check Tools folder for HTML converter based on bitluni's audio to header converter. Original
     // can be found here https://bitluni.net/wp-content/uploads/2018/01/Audio2Header.html.
 
-    audio_init(SOUND_OUTPUT_PIN, SOUND_OUTPUT_SAMPLE_RATE);
+    audio_init(SOUND_OUTPUT_PIN, sampleRate);
 }
 
 /**
@@ -96,7 +96,7 @@ st_systemConfiguration *system_getSystemConfiguration(void) {
 }
 
 /**
-    Toggle beeper ON or OFF.
+    Toggle beeper ON or OFF. Confirmation beep when beeper is ON.
 */
 void system_toggleBeeper(void) {
 

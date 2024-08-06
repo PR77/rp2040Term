@@ -148,6 +148,18 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instanc
     }
 }
 
+static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8_t keycode) {
+    // This is directly from the USB HID Keyboard PICO example. Can be found here
+    // https://github.com/raspberrypi/pico-examples/blob/master/usb/host/host_cdc_msc_hid/hid_app.c
+
+    for (int i = 0; i < 6; i++) {
+        if (report->keycode[i] == keycode)
+            return true;
+    }
+    
+    return false;
+}
+
 static inline bool findCustomKeyInReport(uint8_t keycode, uint8_t *index) {
 
     for (uint8_t i = 0; i < MAX_CUSTOM_KEY_HANDLERS; i++) {
@@ -172,29 +184,33 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {
-                // If keycode in current report is != 0 current key is pressed.
-                uint8_t customerHandlerIndex = 0;
-                if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
-                    if (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler) {
-                        keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler();
-                    }
-                } else {
-                    bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
-                    bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
-                    bool const is_ctrl = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTCTRL);
-                    bool const is_leftalt = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTALT);
-                    uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
-
-                    if ((is_ctrl == true) && (is_leftalt == true) && (currentReport->keycode[i] == HID_KEY_DELETE)) {
-                        // Three finger salute detected, lets call whatever has been attached.
-                        if (NULL != keyboardSystemResetHandler.keyPressedHandler) {
-                            keyboardSystemResetHandler.keyPressedHandler();
+                // Not existed in previous report means the current key is pressed. This prevents
+                // multiple key presses registering if pressed at the same time and then released
+                // seperately.
+                if (false == find_key_in_report(&previousReport, currentReport->keycode[i])) {
+                    uint8_t customerHandlerIndex = 0;
+                    if (true == findCustomKeyInReport(currentReport->keycode[i], &customerHandlerIndex)) {
+                        if (NULL != keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler) {
+                            keyboardCustomHandlers[customerHandlerIndex].keyPressedHandler();
                         }
-                    }
+                    } else {
+                        bool const is_shift = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTSHIFT | KEYBOARD_MODIFIER_RIGHTSHIFT);
+                        bool const is_altgrp = currentReport->modifier & (KEYBOARD_MODIFIER_RIGHTALT);
+                        bool const is_ctrl = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTCTRL);
+                        bool const is_leftalt = currentReport->modifier & (KEYBOARD_MODIFIER_LEFTALT);
+                        uint8_t keyCharacter = keycode2ascii[currentReport->keycode[i]][is_altgrp ? 2 : is_shift ? 1 : 0];
 
-                    // Check if there is a default key handler and call it if assigned.
-                    if (NULL != keyboardDefaultHandler.keyPressedHandler) {
-                        keyboardDefaultHandler.keyPressedHandler(keyCharacter);
+                        if ((is_ctrl == true) && (is_leftalt == true) && (currentReport->keycode[i] == HID_KEY_DELETE)) {
+                            // Three finger salute detected, lets call whatever has been attached.
+                            if (NULL != keyboardSystemResetHandler.keyPressedHandler) {
+                                keyboardSystemResetHandler.keyPressedHandler();
+                            }
+                        }
+
+                        // Check if there is a default key handler and call it if assigned.
+                        if (NULL != keyboardDefaultHandler.keyPressedHandler) {
+                            keyboardDefaultHandler.keyPressedHandler(keyCharacter);
+                        }
                     }
                 }
             } else if (previousReport.keycode[i] != 0) {
