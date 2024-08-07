@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(RP2040TERM_VERSION_MAJOR "0")
 set(RP2040TERM_VERSION_MINOR "1")
-set(RP2040TERM_DESCR "Alpha" )
+set(RP2040TERM_DESCR "Alpha-Beta" )
 
 pico_sdk_init()
 
@@ -49,8 +49,6 @@ target_compile_definitions(rp2040Term PUBLIC
   STATUS_BAR_ROW=16
   CMAKE_PROJECT_VERSION="${RP2040TERM_VERSION_MAJOR}.${RP2040TERM_VERSION_MINOR}"
   CMAKE_PROJECT_DESCRIPTION="${RP2040TERM_DESCR}")
-
-  # target_compile_options(colour_text PUBLIC -Werror -Wall -Wextra -Wnull-dereference)
 
 target_include_directories(rp2040Term PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
