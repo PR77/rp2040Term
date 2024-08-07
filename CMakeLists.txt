@@ -12,7 +12,7 @@ set(RP2040TERM_DESCR "Alpha-Beta" )
 pico_sdk_init()
 
 # Read version from file:
-file(READ "build_number.h" VERSION_STRING)
+file(READ "Source/build_number.h" VERSION_STRING)
 # Remove whitespace characters (like newline):
 string(STRIP ${VERSION_STRING} VERSION_STRING)
 # Match anything before build metadata (+ character) and save it as VER_NUM (usual regex would be: /^(.*?)\+/ but this is cmake):
@@ -25,16 +25,16 @@ math(EXPR BUILD_NUM "${BUILD_NUM}+1")
 string(CONCAT VERSION_STRING ${VER_NUM} ${BUILD_NUM})
 # Print info and save to file:
 #message(NOTICE "New build number: ${VERSION_STRING}")
-file(WRITE "build_number.h" ${VERSION_STRING})
+file(WRITE "Source/build_number.h" ${VERSION_STRING})
 
 add_executable(rp2040Term
-  main.c
-  system.c
-  conio.c
-  serial.c
-  status.c
-  keyboard.c
-  font_sun8x16.c)
+  Source/main.c
+  Source/system.c
+  Source/conio.c
+  Source/serial.c
+  Source/status.c
+  Source/keyboard.c
+  Source/font_sun8x16.c)
 
 add_subdirectory(RP2040-PWM-DMA-Audio)
 
@@ -50,7 +50,7 @@ target_compile_definitions(rp2040Term PUBLIC
   CMAKE_PROJECT_VERSION="${RP2040TERM_VERSION_MAJOR}.${RP2040TERM_VERSION_MINOR}"
   CMAKE_PROJECT_DESCRIPTION="${RP2040TERM_DESCR}")
 
-target_include_directories(rp2040Term PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(rp2040Term PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Source ${CMAKE_CURRENT_LIST_DIR})
 
 pico_enable_stdio_uart(rp2040Term 0)
 pico_enable_stdio_usb(rp2040Term 0)
