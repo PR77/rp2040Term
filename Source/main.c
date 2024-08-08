@@ -56,11 +56,6 @@ int main(void) {
     */
     set_sys_clock_pll(1482000000, 6, 2);
 
-    // Setup GPIO for LED
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    gpio_put(PICO_DEFAULT_LED_PIN, false);
-
     system_initialiseSystem();
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
     status_initialiseStatusBar(PALETTE_COLOUR_GREEN_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);

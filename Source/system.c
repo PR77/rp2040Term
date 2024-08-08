@@ -56,6 +56,16 @@ void system_initialiseSystem(void) {
     systemConfiguration.lcdBacklightValue = LCD_BACKLIGHTING_DEFAULT;
     systemConfiguration.beeper = false;
 
+    // Setup GPIO for LED
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+    gpio_put(PICO_DEFAULT_LED_PIN, false);
+
+    // Setup GPIO for LCD PON
+    gpio_init(LCD_RESET_PON_PIN);
+    gpio_set_dir(LCD_RESET_PON_PIN, GPIO_OUT);
+    gpio_put(LCD_RESET_PON_PIN, true);  
+
     // Setup GPIO for LCD backlighting
     gpio_set_function(LCD_BACKLIGHT_PWM_PIN, GPIO_FUNC_PWM);
     uint slice_num = pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN);
