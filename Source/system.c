@@ -66,6 +66,11 @@ void system_initialiseSystem(void) {
     gpio_set_dir(LCD_RESET_PON_PIN, GPIO_OUT);
     gpio_put(LCD_RESET_PON_PIN, true);  
 
+    // Setup GPIO for LCD Horizontal Scanning Direction
+    gpio_init(LCD_HRV_VRV_SCANNING_PIN);
+    gpio_set_dir(LCD_HRV_VRV_SCANNING_PIN, GPIO_OUT);
+    gpio_put(LCD_HRV_VRV_SCANNING_PIN, true);  
+
     // Setup GPIO for LCD backlighting
     gpio_set_function(LCD_BACKLIGHT_PWM_PIN, GPIO_FUNC_PWM);
     uint slice_num = pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN);

@@ -7,6 +7,7 @@
 
 #define LCD_BACKLIGHT_PWM_PIN       28
 #define LCD_RESET_PON_PIN           26
+#define LCD_HRV_VRV_SCANNING_PIN    22
 
 #define LCD_BACKLIGHTING_PWM_MIN    0
 #define LCD_BACKLIGHTING_PWM_MAX    100
