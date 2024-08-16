@@ -7,7 +7,7 @@
 
 #define LOCALISE_DE
 #define MAX_REPORT              4
-#define MAX_CUSTOM_KEY_HANDLERS 6
+#define MAX_CUSTOM_KEY_HANDLERS 8
 
 //--------------------------------------------------------------------/
  // DE keyboard

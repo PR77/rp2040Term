@@ -1,5 +1,6 @@
 #include "pico.h"
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "hardware/clocks.h"
@@ -8,12 +9,17 @@
 #include "hardware/pwm.h"
 #include "RP2040-PWM-DMA-Audio/audio.h"
 #include "StartupAppleII.h"
+#include "font.h"
 #include "font_sun8x16.h"
+#include "font_sans8x16.h"
+#include "font_serif8x16.h"
 #include "conio.h"
 #include "serial.h"
 #include "system.h"
 
 static st_systemConfiguration systemConfiguration;
+const st_fontEntry * availableFonts[] = {&sansFont, &serifFont, &sunFont};
+static uint8_t fontIndex = 0;
 
 const scanvideo_timing_t tftLQ043Timing_480x272_50 = {
 
@@ -159,6 +165,28 @@ void system_decreaseBacklightByStep(void) {
 }
 
 /**
+    Cycle through available display fonts
+*/
+void system_cycleDisplayFont(void) {
+
+    if ((fontIndex + 1) >= (sizeof(availableFonts) / sizeof(availableFonts[0]))) {
+        // Ensure we never set fontIndex to out of bounds otherwise the rendering running
+        // on Core 1 will index to out-of-bounds memory.
+        fontIndex = 0;
+    } else {
+        fontIndex++;
+    }
+}
+
+/**
+    System reset handler. Execute software triggered system reset.
+*/
+void system_executeSystemReset(void) {
+
+    watchdog_reboot(0, 0, 0);
+}
+
+/**
     PWM wrap handler. Needed to ensure PWM duty cycle is updated on edge.
 */
 void system_onPwmWrap(void) {
@@ -172,14 +200,6 @@ void system_onPwmWrap(void) {
     }
 
     pwm_set_gpio_level(LCD_BACKLIGHT_PWM_PIN, targetPwmValue);
-}
-
-/**
-    System reset handler. Execute software triggered system reset.
-*/
-void system_executeSystemReset(void) {
-
-    watchdog_reboot(0, 0, 0);
 }
 
 /**
@@ -224,15 +244,18 @@ void __time_critical_func(system_renderLoop)(void) {
 
         // Assign ch pointer for the applicable row and increment the column index within the
         // for-loop. This avoids having to call conio_getCharacterBuffer from within the loop.
-        st_conioCharacter *ch = conio_getCharacterBuffer(rowIndex, 0);
+        st_conioCharacter * ch_p = conio_getCharacterBuffer(rowIndex, 0);
 
         for (uint8_t columnIndex = 0; columnIndex < TEXT_COLUMNS; ++columnIndex) {
             // In this loop all glyph parts for specific scanline are rendered.
-            uint16_t foregroundColour = ch->foregroundColour;
-            uint16_t backgroundColour = ch->backgroundColour;
-            uint8_t fontBits = fontdata_sun8x16[ch->locationCharacter][rowScanline];
+            uint16_t foregroundColour = ch_p->foregroundColour;
+            uint16_t backgroundColour = ch_p->backgroundColour;
 
-            if (ch->invert == true) {
+            const st_fontEntry * fontEntry_p = availableFonts[fontIndex];
+            const st_glyphData * glyphData_p = fontEntry_p->glyphData;
+            uint8_t fontBits = (*glyphData_p)[ch_p->locationCharacter][rowScanline];
+
+            if (ch_p->invert == true) {
                 fontBits = ~fontBits;
             }
 
@@ -285,7 +308,7 @@ void __time_critical_func(system_renderLoop)(void) {
             // Incremet the pix pointer by the GLYPH_WIDTH.
             pix += GLYPH_WIDTH;
             // Increment the ch pointer to the next column.
-            ch++;
+            ch_p++;
         }
 
         ++pix;

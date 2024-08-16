@@ -31,10 +31,12 @@ add_executable(rp2040Term
   Source/main.c
   Source/system.c
   Source/conio.c
-  Source/serial.c
+  Source/serial.c 
   Source/status.c
   Source/keyboard.c
-  Source/font_sun8x16.c)
+  Source/font_sun8x16.c
+  Source/font_sans8x16.c
+  Source/font_serif8x16.c)
 
 add_subdirectory(RP2040-PWM-DMA-Audio)
 

@@ -66,6 +66,7 @@ int main(void) {
     keyboard_initialiseKeyboard();
     keyboard_attachSystemResetHandler(&system_executeSystemReset);
     keyboard_attachCustomKeyHandler(HID_KEY_F1, &conio_clearScreenHomeCursor, NULL);
+    keyboard_attachCustomKeyHandler(HID_KEY_F2, &system_cycleDisplayFont, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F8, &system_toggleBeeper, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F9, &system_toggleCRLF, NULL);
     keyboard_attachCustomKeyHandler(HID_KEY_F10, &system_decreaseBacklightByStep, NULL);
