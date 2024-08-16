@@ -12,3 +12,12 @@ I am currently using this with a Sharp LQ042 LCD with a resolution of 480x272. T
 # Appearance
 ![LCD Screen](/Images/lcdScreen.jpg)
 ![Mess Of Wires](/Images/messOfWires.jpg)
+
+# Credits
+Repos containing some great tools and resources;
+- https://geoffg.net/terminal.html
+- https://github.com/Memotech-Bill/pico-colour-text/tree/main
+- https://github.com/RC2014Z80/picoterm
+- https://github.com/TuriSc/RP2040-PWM-DMA-Audio
+- https://github.com/rewtnull/amigafonts
+- https://github.com/Jamesits/bin2array

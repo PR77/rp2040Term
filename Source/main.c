@@ -14,6 +14,8 @@ this;
 https://geoffg.net/terminal.html
 https://github.com/Memotech-Bill/pico-colour-text/tree/main
 https://github.com/RC2014Z80/picoterm
+https://github.com/rewtnull/amigafonts
+https://github.com/Jamesits/bin2array
 
 -----------------------------------------------------------------------------*/
 
