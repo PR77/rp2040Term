@@ -38,7 +38,7 @@ add_executable(rp2040Term
   Source/font_sans8x16.c
   Source/font_serif8x16.c)
 
-add_subdirectory(RP2040-PWM-DMA-Audio)
+add_subdirectory(RP2040-PWM-DMA-Audio-master)
 
 target_compile_definitions(rp2040Term PUBLIC 
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=250

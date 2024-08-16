@@ -7,7 +7,7 @@
 #include "hardware/watchdog.h"
 #include "hardware/irq.h"
 #include "hardware/pwm.h"
-#include "RP2040-PWM-DMA-Audio/audio.h"
+#include "RP2040-PWM-DMA-Audio-master/audio.h"
 #include "StartupAppleII.h"
 #include "font.h"
 #include "font_sun8x16.h"
