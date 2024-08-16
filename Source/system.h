@@ -22,7 +22,7 @@
 
 /* Information on LCD Pixel Clock
 .clock_freq = 9500000, // can only be used with set_sys_clock_pll (1482000000, 6, 2) results in a of clock of 123.5MHz;
-.clock_freq = 7812500, // can only be used with set_sys_clock_khz (125000, true) results in a of clock of 125.9MHz;
+.clock_freq = 7812500, // can only be used with set_sys_clock_khz (125000, true) results in a of clock of 125.0MHz;
 */
 
 #define LCD_PIXEL_CLK               9500000
