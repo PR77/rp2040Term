@@ -115,7 +115,7 @@ void vt100_putCharacter(uint8_t c) {
         for (cmd = 0; cmd < (sizeof(vt100CommandTable) / sizeof(vt100CommandTable[0])); cmd++) {
             if ((vt100CommandTable[cmd].mode & mode) && *vt100CommandTable[cmd].name == *vtbuf) {   // check the mode then a quick check of the first char
                 arg[0] = argc = 0;
-                for(j = i = 1; vt100CommandTable[cmd].name[i] && j < vtcnt; i++, j++) {
+                for (j = i = 1; vt100CommandTable[cmd].name[i] && j < vtcnt; i++, j++) {
                     if (vt100CommandTable[cmd].name[i] == '^') {
                         arg[argc++] = vtbuf[j] - 31;
                     } else if (vt100CommandTable[cmd].name[i] == '@') {
@@ -129,7 +129,7 @@ void vt100_putCharacter(uint8_t c) {
                     }
                 }
 
-                if(vt100CommandTable[cmd].name[i] == 0) {                      // compare succeded, we have found the command
+                if (vt100CommandTable[cmd].name[i] == 0) {                      // compare succeded, we have found the command
                     vtcnt = 0;                                      // clear all chars in the queue
                     vt100CommandTable[cmd].commandHandler();                             // and execute the command
                     return;
