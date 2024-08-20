@@ -28,8 +28,9 @@
 #define LCD_PIXEL_CLK               9500000
 
 typedef struct {
-    bool    beeper;
-    bool    localEcho;
+    bool    enableBeeper;
+    bool    requestBeeper;
+    bool    enableLocalEcho;
     bool    insertLineFeedOnCarriageReturn;
     uint8_t lcdBacklightValue;
 } st_systemConfiguration;

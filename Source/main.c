@@ -32,6 +32,7 @@ https://github.com/Jamesits/bin2array
 #include "status.h"
 #include "keyboard.h"
 #include "system.h"
+#include "vt100.h"
 #include "build_number.h"
 
 static semaphore_t videoInitialised;
@@ -63,7 +64,7 @@ int main(void) {
     status_initialiseStatusBar(PALETTE_COLOUR_GREEN_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
 
     serial_initialiseTerminalUart(uart1);
-    serial_attachReceivedCharacterHandler(&conio_printSimpleCharacter);
+    serial_attachReceivedCharacterHandler(&vt100_putCharacter);
 
     keyboard_initialiseKeyboard();
     keyboard_attachSystemResetHandler(&system_executeSystemReset);

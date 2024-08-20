@@ -60,7 +60,7 @@ const scanvideo_mode_t tftLQ042_480x272_60 = {
 void system_initialiseSystem(void) {
 
     systemConfiguration.lcdBacklightValue = LCD_BACKLIGHTING_DEFAULT;
-    systemConfiguration.beeper = false;
+    systemConfiguration.enableBeeper = false;
 
     // Setup GPIO for LED
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -121,10 +121,10 @@ st_systemConfiguration *system_getSystemConfiguration(void) {
 */
 void system_toggleBeeper(void) {
 
-    systemConfiguration.beeper ^= true;
+    systemConfiguration.enableBeeper ^= true;
 
-    if (true == systemConfiguration.beeper) {
-        audio_play_once(samples, sizeof(samples));    
+    if (true == systemConfiguration.enableBeeper) {
+        systemConfiguration.requestBeeper = true;
     }
 }
 
@@ -133,7 +133,7 @@ void system_toggleBeeper(void) {
 */
 void system_toggleLocalEcho(void) {
 
-    systemConfiguration.localEcho ^= true;
+    systemConfiguration.enableLocalEcho ^= true;
 }
 
 /**
@@ -211,7 +211,7 @@ void system_handleKeyboardAndUartTransmitRouting(uint8_t character) {
 
     serial_uartSendCharacter(character);
 
-    if (true == systemConfiguration.localEcho) {
+    if (true == systemConfiguration.enableLocalEcho) {
         conio_printSimpleCharacter(character);    
     }
 
@@ -251,9 +251,10 @@ void __time_critical_func(system_renderLoop)(void) {
             uint16_t foregroundColour = ch_p->foregroundColour;
             uint16_t backgroundColour = ch_p->backgroundColour;
 
-            const st_fontEntry * fontEntry_p = availableFonts[fontIndex];
-            const st_glyphData * glyphData_p = fontEntry_p->glyphData;
-            uint8_t fontBits = (*glyphData_p)[ch_p->locationCharacter][rowScanline];
+            //const st_fontEntry * fontEntry_p = availableFonts[fontIndex];
+            //const st_glyphData * glyphData_p = fontEntry_p->glyphData;
+            //uint8_t fontBits = (*glyphData_p)[ch_p->locationCharacter][rowScanline];
+            uint8_t fontBits = (*availableFonts[fontIndex]->glyphData)[ch_p->locationCharacter][rowScanline];
 
             if (ch_p->invert == true) {
                 fontBits = ~fontBits;
@@ -356,4 +357,9 @@ void system_updateLedTask(void) {
 void system_updateBellTask(void) {
 
     audio_mixer_step();
+
+    if (true == systemConfiguration.requestBeeper) {
+        systemConfiguration.requestBeeper = false;
+        audio_play_once(samples, sizeof(samples));    
+    }
 }

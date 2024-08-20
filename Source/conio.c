@@ -195,6 +195,105 @@ void conio_hideCursor(void) {
 }
 
 /**
+    Move the cursor to the home position.
+*/
+void conio_moveCursorHome(void) {
+
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
+
+    conio_hideCursor();
+    cursorPosition->currentCursorColumn = 0;
+    cursorPosition->currentCursorRow = 0;
+    
+    conio_displayCursor();
+}
+
+/**
+    Move the cursor up the screen. This function will perform the bounds check to ensure the
+    cursor remains on the screen
+
+    @param[in]     positionCounts numbers of steps the cursor needs to move.
+*/
+void conio_moveCursorUp(uint8_t positionCounts) {
+
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
+
+    conio_hideCursor();
+    if ((cursorPosition->currentCursorRow - positionCounts) >= 0) {
+        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow - positionCounts);    
+    } else {
+        cursorPosition->currentCursorRow = 0;    
+    }
+
+    conio_displayCursor();
+}
+
+/**
+    Move the cursor down the screen. This function will perform the bounds check to ensure the
+    cursor remains on the screen
+
+    @param[in]     positionCounts numbers of steps the cursor needs to move.
+*/
+void conio_moveCursorDown(uint8_t positionCounts) {
+    
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
+
+    conio_hideCursor();
+    if ((cursorPosition->currentCursorRow + positionCounts) < (TEXT_ROWS_VISIBLE - 1)) {
+        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow + positionCounts);    
+    } else {
+        cursorPosition->currentCursorRow = (TEXT_ROWS_VISIBLE - 1);
+    }
+
+    conio_displayCursor();
+}
+
+/**
+    Move the cursor to the left of the screen. This function will perform the bounds check to
+    ensure the cursor remains on the screen
+
+    @param[in]     positionCounts numbers of steps the cursor needs to move.
+*/
+void conio_moveCursorLeft(uint8_t positionCounts) {
+
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
+
+    conio_hideCursor();
+    if ((cursorPosition->currentCursorColumn - positionCounts) >= 0) {
+        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn - positionCounts);    
+    } else {
+        cursorPosition->currentCursorColumn = 0;    
+    }
+
+    conio_displayCursor();
+}
+
+/**
+    Move the cursor to the right of the screen. This function will perform the bounds check to
+    ensure the cursor remains on the screen
+
+    @param[in]     positionCounts numbers of steps the cursor needs to move.
+*/
+void conio_moveCursorRight(uint8_t positionCounts) {
+
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    assert (cursorPosition != NULL);
+
+    conio_hideCursor();
+    if ((cursorPosition->currentCursorColumn + positionCounts) < (TEXT_COLUMNS_VISIBLE - 1)) {
+        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn + positionCounts);    
+    } else {
+        cursorPosition->currentCursorColumn = (TEXT_COLUMNS_VISIBLE - 1);
+    }
+
+    conio_displayCursor();
+}
+
+/**
     Scroll entire screen and all content "UP" by 1 TEXT_ROW.
 */
 void conio_scrollScreenUp(void) {

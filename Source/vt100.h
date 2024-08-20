@@ -46,19 +46,46 @@
  *  Modifed By PR77 as part of the rp2040Term
 ****************************************************************************************/
 
+#ifndef VT100_H
+#define	VT100_H
 
-void initVT100(void);
-void VT100Putc(char c);
-void VideoPrintString(char *p);
-void cmd_Reset(void);
+typedef struct {
+    uint8_t *   name;                       // the string
+    uint8_t     mode;                       // 1 = ANSI only, 2 = VT52, 3 = both
+    void        (* commandHandler)(void);   // pointer to the function that will interpret that command
+} st_vt100CommandTable;
+
+void vt100_putCharacter(uint8_t c);
+
+void cmd_CurHome(void);
+void cmd_CurUp(void);
+void cmd_CurDown(void);
+void cmd_CurLeft(void);
+void cmd_CurRight(void);
+void cmd_CurPosition(void);
 void cmd_ClearEOL(void);
 void cmd_ClearEOS(void);
-void CursorPosition(int x, int y);
+void cmd_ClearBOL(void);
+void cmd_ClearBOS(void);
+void cmd_ClearScreen(void);
+void cmd_CursorOff(void);
+void cmd_CursorOn(void);
+void cmd_ClearLine(void);
+void cmd_CurSave(void);
+void cmd_CurRestore(void);
+void cmd_VT100OK(void);
+void cmd_VT100ID(void);
+void cmd_Reset(void);
+void cmd_Attributes(void);
+void cmd_ReportPosition(void);
+void cmd_LineFeed(void);
+void cmd_SetMode(void);
+void cmd_ResetMode(void);
 
 extern int AttribUL, AttribRV, AttribInvis;                         // attributes that can be turned on/off
 
 #define VT100   1
 #define VT52    2
 #define BOTH    3
-extern int mode;                                                    // current mode.  can be VT100 or VT52
 
+#endif // VT100_H

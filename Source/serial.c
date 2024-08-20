@@ -142,6 +142,23 @@ bool serial_uartSendCharacter(uint8_t character) {
 }
 
 /**
+    Sends a string out the configured UART. This is non blocking as the string characters
+    is pushed directly into a buffer and transmission is started.
+
+    @param[in]     string_p string to send via UART device.
+    @returns[out]  bool to indicate transmit was successfully queued in buffer.
+
+*/
+bool serial_uartSendString(uint8_t *string_p) {
+    
+    assert (string_p != NULL);
+
+    while(*string_p) {
+        serial_uartSendCharacter(*string_p++);  
+    }
+}
+
+/**
     Attach a custom handler which is called whenever a character is received from
     the UART interface.
     

@@ -85,9 +85,9 @@ void status_forceStatusBarUpdate(void) {
     snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "Map ");
     snprintf(&msgBuffer[16], (TEXT_COLUMNS_VISIBLE - 16), "%s, ", KEYMAP);
     snprintf(&msgBuffer[20], (TEXT_COLUMNS_VISIBLE - 20), "BL %03d%%, ", system->lcdBacklightValue);
-    snprintf(&msgBuffer[29], (TEXT_COLUMNS_VISIBLE - 29), "%s, ", (system->beeper == true) ? "Beep" : "    ");
+    snprintf(&msgBuffer[29], (TEXT_COLUMNS_VISIBLE - 29), "%s, ", (system->enableBeeper == true) ? "Beep" : "    ");
     snprintf(&msgBuffer[35], (TEXT_COLUMNS_VISIBLE - 35), "%s, ", (system->insertLineFeedOnCarriageReturn == true) ? "CRLF" : "    ");
-    snprintf(&msgBuffer[41], (TEXT_COLUMNS_VISIBLE - 41), "%s, ", (system->localEcho == true) ? "Echo" : "    ");
+    snprintf(&msgBuffer[41], (TEXT_COLUMNS_VISIBLE - 41), "%s, ", (system->enableLocalEcho == true) ? "Echo" : "    ");
     snprintf(&msgBuffer[47], (TEXT_COLUMNS_VISIBLE - 47 + 1), "USB: %s", keyboard->deviceStr);
 
     // Print status bar content directly to character buffer so as to not affect the cursor.

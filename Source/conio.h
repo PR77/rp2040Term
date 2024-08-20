@@ -52,6 +52,11 @@ void conio_enableCursor(void);
 void conio_disableCursor(void);
 void conio_displayCursor(void);
 void conio_hideCursor(void);
+void conio_moveCursorHome(void);
+void conio_moveCursorUp(uint8_t positionCounts);
+void conio_moveCursorDown(uint8_t positionCounts);
+void conio_moveCursorLeft(uint8_t positionCounts);
+void conio_moveCursorRight(uint8_t positionCounts);
 
 /* Scroll functions */
 void conio_scrollScreenUp(void);
