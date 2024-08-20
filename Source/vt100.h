@@ -71,16 +71,11 @@ void cmd_ClearScreen(void);
 void cmd_CursorOff(void);
 void cmd_CursorOn(void);
 void cmd_ClearLine(void);
-void cmd_CurSave(void);
-void cmd_CurRestore(void);
 void cmd_VT100OK(void);
 void cmd_VT100ID(void);
 void cmd_Reset(void);
-void cmd_Attributes(void);
 void cmd_ReportPosition(void);
 void cmd_LineFeed(void);
-void cmd_SetMode(void);
-void cmd_ResetMode(void);
 
 extern int AttribUL, AttribRV, AttribInvis;                         // attributes that can be turned on/off
 

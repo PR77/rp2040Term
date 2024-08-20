@@ -59,10 +59,11 @@
 #include "vt100.h"
 
 #define VTBUF_SIZE  40
-unsigned char vtbuf[VTBUF_SIZE + 1];                                // buffer for chars waiting to be decoded
-int vtcnt;                                                          // count of the number of chars in vtbuf
 
-int arg[8], argc;                                                   // arguments to a command
+static uint8_t vtbuf[VTBUF_SIZE + 1];   // buffer for chars waiting to be decoded
+static uint8_t vtcnt;                   // count of the number of chars in vtbuf
+static uint8_t arg[8], argc;            // arguments to a command
+static uint8_t mode = VT100;
 
 /***************************************************************************************************************************************
  The command table
@@ -91,21 +92,14 @@ const st_vt100CommandTable vt100CommandTable[] = {
     { "\033[@;@f",      VT100,      cmd_CurPosition },
     { "\033[H",         VT100,      cmd_CurHome },
     { "\033[f",         VT100,      cmd_CurHome },
-    { "\0337",          VT100,      cmd_CurSave },
-    { "\0338",          VT100,      cmd_CurRestore },
 
     { "\033D",          VT100,      cmd_LineFeed },
 
-    { "\033[@m" ,       VT100,      cmd_Attributes },
     { "\033c" ,         BOTH,       cmd_Reset },
     { "\033[c" ,        VT100,      cmd_VT100ID },
     { "\033[0c" ,       VT100,      cmd_VT100ID },
     { "\033[5n" ,       VT100,      cmd_VT100OK },
 };
-
-int AttribUL, AttribRV, AttribInvis;                                // attributes that can be turned on/off
-int SaveX, SaveY, SaveUL, SaveRV, SaveInvis, SaveFontNbr;           // saved attributes that can be restored
-int mode = VT100;
 
 void vt100_putCharacter(uint8_t c) {
     int cmd, i, j, partial;
@@ -281,30 +275,6 @@ void cmd_ClearLine(void) {
     cmd_ClearEOL();
 }
 
-// save the current attributes
-void cmd_CurSave(void) {
-    /*
-    SaveX = CharPosX;
-    SaveY = CharPosY;
-    SaveUL = AttribUL;
-    SaveRV = AttribRV;
-    SaveInvis = AttribInvis;
-    SaveFontNbr = fontNbr;
-    */
-}
-
-// restore the saved attributes
-void cmd_CurRestore(void) {
-    /*
-    if(SaveFontNbr == -1) return;
-    CursorPosition(SaveX, SaveY);
-    AttribUL = SaveUL;
-    AttribRV = SaveRV;
-    AttribInvis = SaveInvis;
-    initFont(SaveFontNbr);
-    */
-}
-
 // respond as a VT100 thats OK
 void cmd_VT100OK(void) {
     serial_uartSendString("\033[0n");
@@ -320,60 +290,19 @@ void cmd_Reset(void) {
     system_executeSystemReset();
 }
 
-// set attributes
-void cmd_Attributes(void) {
-    /*
-    ShowCursor(false);                                              // turn off the cursor to prevent it from getting confused
-    if(arg[0] == 0) {
-        AttribUL = AttribRV = AttribInvis = 0;
-        initFont(1);
-    }
-    if(arg[0] == 4) AttribUL = 1;
-    if(arg[0] == 3) initFont(2);
-    if(arg[0] == 7) AttribRV = 1;
-    if(arg[0] == 6) initFont(3);
-    if(arg[0] == 8) AttribInvis = 1;
-    */
-}
-
 // respond with the current cursor position
 void cmd_ReportPosition(void) {
-    /*
-    char s[20];
-    sprintf(s, "\033[%d;%dR", CharPosY, CharPosX);
-    putSerialString(s);
-    */
+
+    st_conioCursor *cursorPosition = conio_getCurrentCursorPosition();
+    uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
+
+    assert (cursorPosition != NULL);
+
+    snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "\033[%d;%dR", cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
+    serial_uartSendString(msgBuffer);
 }
 
 // do a line feed
 void cmd_LineFeed(void) {
     conio_printSimpleCharacter('\n');
-}
-
-// turn on automatic line wrap, etc
-void cmd_SetMode(void) {
-    /*
-    if(arg[0] == 7) AutoLineWrap = true;
-    if(arg[0] == 9 && vga) {
-        cmd_CurHome();
-        ConfigBuffers(true);
-        ShowCursor(false);                                              // turn off the cursor to prevent it from getting confused
-        ClearScreen();
-        CursorPosition(1, 1);
-    }
-    */
-}
-
-
-// turn off automatic line wrap, etc
-void cmd_ResetMode(void) {
-    /*
-    if(arg[0] == 7) AutoLineWrap = false;
-    if(arg[0] == 9 && vga) {
-        ConfigBuffers(false);
-        ShowCursor(false);                                              // turn off the cursor to prevent it from getting confused
-        ClearScreen();
-        CursorPosition(1, 1);
-    }
-    */
 }
