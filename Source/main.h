@@ -5,4 +5,6 @@
 #include "pico/stdlib.h"
 #include "bsp/board.h"
 
+void main_initialiseScanVideo(void);
+
 #endif // MAIN_H

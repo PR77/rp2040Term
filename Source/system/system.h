@@ -4,6 +4,7 @@
 #include "pico.h"
 #include "pico/stdlib.h"
 #include "bsp/board.h"
+#include "font.h"
 
 #define LCD_BACKLIGHT_PWM_PIN       28
 #define LCD_RESET_PON_PIN           26
@@ -31,6 +32,7 @@ typedef struct {
     bool    enableBeeper;
     bool    requestBeeper;
     bool    enableLocalEcho;
+    bool    fontUpdated;
     bool    insertLineFeedOnCarriageReturn;
     uint8_t lcdBacklightValue;
 } st_systemConfiguration;
@@ -46,6 +48,8 @@ void system_toggleCRLF(void);
 void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
 void system_cycleDisplayFont(void);
+void system_clearFontUpdatedStatus(void);
+const st_fontEntry *system_getCurrentFontStructure(void);
 void system_executeSystemReset(void);
 void system_onPwmWrap(void);
 void system_handleKeyboardAndUartTransmitRouting(uint8_t character);

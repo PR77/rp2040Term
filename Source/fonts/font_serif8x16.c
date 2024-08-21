@@ -263,7 +263,7 @@ const st_glyphData fontdata_serif8x16 = {
 };
 
 const st_fontEntry serifFont = {
-    .name           = "Topaz Serif 8x16",
+    .fontName       = "Topaz Serif 8x16",
     .glyphData      = &fontdata_serif8x16,
     .glyphCount     = GLYPH_COUNT,
     .glyphWidth     = GLYPH_WIDTH,

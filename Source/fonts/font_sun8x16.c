@@ -263,7 +263,7 @@ const st_glyphData fontdata_sun8x16 = {
 };
 
 const st_fontEntry sunFont = {
-    .name           = "VGA Sun 8x16",
+    .fontName       = "VGA Sun 8x16",
     .glyphData      = &fontdata_sun8x16,
     .glyphCount     = GLYPH_COUNT,
     .glyphWidth     = GLYPH_WIDTH,

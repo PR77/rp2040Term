@@ -37,7 +37,7 @@ https://github.com/Jamesits/bin2array
 
 static semaphore_t videoInitialised;
 
-void system_initialiseScanVideo(void) {
+void main_initialiseScanVideo(void) {
 
     scanvideo_setup(&tftLQ042_480x272_60);
     scanvideo_timing_enable(true);
@@ -79,7 +79,7 @@ int main(void) {
     
     // Create a semaphore to be posted when video init is complete
     sem_init(&videoInitialised, 0, 1);
-    multicore_launch_core1(system_initialiseScanVideo);
+    multicore_launch_core1(main_initialiseScanVideo);
     // wait for initialization of video to be complete
     sem_acquire_blocking(&videoInitialised);
 

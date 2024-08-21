@@ -61,6 +61,7 @@ void system_initialiseSystem(void) {
 
     systemConfiguration.lcdBacklightValue = LCD_BACKLIGHTING_DEFAULT;
     systemConfiguration.enableBeeper = false;
+    systemConfiguration.fontUpdated = false;
 
     // Setup GPIO for LED
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -176,6 +177,26 @@ void system_cycleDisplayFont(void) {
     } else {
         fontIndex++;
     }
+
+    systemConfiguration.fontUpdated = true;
+}
+
+/**
+    Clear the status flag to indicate the display font has been updated.
+*/
+void system_clearFontUpdatedStatus(void) {
+
+    systemConfiguration.fontUpdated = false;
+}
+
+/**
+    Gets a pointer into the font table which is currently in use.
+
+    @returns[out]  pointer to the currently indexed font structure.
+*/
+const st_fontEntry *system_getCurrentFontStructure(void) {
+
+    return (availableFonts[fontIndex]);
 }
 
 /**

@@ -8,7 +8,7 @@
 typedef uint8_t                 st_glyphData[GLYPH_COUNT][GLYPH_HEIGHT];
 
 typedef struct {
-    const char *                name;
+    const char *                fontName;
     const st_glyphData * const  glyphData;
     uint16_t                    glyphCount;
     uint8_t                     glyphWidth;

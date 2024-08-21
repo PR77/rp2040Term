@@ -263,7 +263,7 @@ const st_glyphData fontdata_sans8x16 = {
 };
 
 const st_fontEntry sansFont = {
-    .name           = "Topaz Sans 8x16",
+    .fontName       = "Topaz Sans 8x16",
     .glyphData      = &fontdata_sans8x16,
     .glyphCount     = GLYPH_COUNT,
     .glyphWidth     = GLYPH_WIDTH,

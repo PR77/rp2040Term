@@ -4,7 +4,6 @@
 #include "time.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
-#include "main.h"
 #include "system.h"
 #include "conio.h"
 #include "serial.h"
@@ -69,7 +68,7 @@ void status_forceStatusBarUpdate(void) {
     //   JJJJJJJJ = USB details (8 characters fixed length)
 
     uint8_t serialParity = '?';
-	switch (serial->parity) {
+    switch (serial->parity) {
         case UART_PARITY_NONE:
             serialParity = 'N';
             break;
@@ -79,7 +78,7 @@ void status_forceStatusBarUpdate(void) {
         case UART_PARITY_EVEN:
             serialParity = 'E';
             break;
-	}
+    }
 
     snprintf(msgBuffer, TEXT_COLUMNS_VISIBLE, "%06d %i%c%i, ", serial->baudRate, serial->dataBits, serialParity, serial->stopBits);
     snprintf(&msgBuffer[12], (TEXT_COLUMNS_VISIBLE - 12), "Map ");
