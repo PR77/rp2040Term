@@ -28,18 +28,18 @@ string(CONCAT VERSION_STRING ${VER_NUM} ${BUILD_NUM})
 file(WRITE "Source/build_number.h" ${VERSION_STRING})
 
 add_executable(rp2040Term
-  Source/main.c
-  Source/system.c
-  Source/conio.c
-  Source/serial.c 
-  Source/status.c
-  Source/keyboard.c
-  Source/vt100.c
-  Source/font_sun8x16.c
-  Source/font_sans8x16.c
-  Source/font_serif8x16.c)
+  source/main.c
+  source/system/system.c
+  source/conio/conio.c
+  source/serial/serial.c 
+  source/status/status.c
+  source/keyboard/keyboard.c
+  source/vt100/vt100.c
+  source/fonts/font_sun8x16.c
+  source/fonts/font_sans8x16.c
+  source/fonts/font_serif8x16.c)
 
-add_subdirectory(RP2040-PWM-DMA-Audio-master)
+add_subdirectory(source/audio/RP2040-PWM-DMA-Audio-master)
 
 target_compile_definitions(rp2040Term PUBLIC 
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=250
@@ -53,7 +53,17 @@ target_compile_definitions(rp2040Term PUBLIC
   CMAKE_PROJECT_VERSION="${RP2040TERM_VERSION_MAJOR}.${RP2040TERM_VERSION_MINOR}"
   CMAKE_PROJECT_DESCRIPTION="${RP2040TERM_DESCR}")
 
-target_include_directories(rp2040Term PRIVATE ${CMAKE_CURRENT_LIST_DIR}/Source ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(rp2040Term PRIVATE
+  ${CMAKE_CURRENT_LIST_DIR}
+  ${CMAKE_CURRENT_LIST_DIR}/source
+  ${CMAKE_CURRENT_LIST_DIR}/source/audio
+  ${CMAKE_CURRENT_LIST_DIR}/source/conio
+  ${CMAKE_CURRENT_LIST_DIR}/source/fonts
+  ${CMAKE_CURRENT_LIST_DIR}/source/keyboard
+  ${CMAKE_CURRENT_LIST_DIR}/source/serial
+  ${CMAKE_CURRENT_LIST_DIR}/source/status
+  ${CMAKE_CURRENT_LIST_DIR}/source/system
+  ${CMAKE_CURRENT_LIST_DIR}/source/vt100)
 
 pico_enable_stdio_uart(rp2040Term 0)
 pico_enable_stdio_usb(rp2040Term 0)
