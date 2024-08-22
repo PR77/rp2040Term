@@ -493,16 +493,15 @@ void conio_printSimpleString(char *string_p) {
 uint8_t conio_displayPopup(char *string_p, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex, uint16_t popupDuration) {
 
     uint8_t popupIndex = UINT8_MAX;
-    st_conioCharacter *source = NULL;
-    st_conioCharacter *destination = NULL;
     
     // Need to find the first free entry into our popup structure.
     for (uint8_t i = 0; i < MAXIMUM_POPUPS_ALLOWED; i++) {
         if (false == conioPopups[i].popupAllocated) {
             popupIndex = i;
             break;    
-        } else {
+        } 
 
+        if (i == (MAXIMUM_POPUPS_ALLOWED - 1)) {
             // No free entry was found, so simply return with error code.
             return (popupIndex);
         }
@@ -526,8 +525,8 @@ uint8_t conio_displayPopup(char *string_p, e_colourPaletteIndexes foregroundColo
     }
 
     // Copy content of existing row into popup structure buffer. 
-    source = conio_getCharacterBuffer(POPUP_ROW, 0);
-    destination = conioPopups[popupIndex].previousRowContent;
+    st_conioCharacter *source = conio_getCharacterBuffer(POPUP_ROW, 0);
+    st_conioCharacter *destination = conioPopups[popupIndex].previousRowContent;
 
     assert (source != NULL);
     assert (destination != NULL);

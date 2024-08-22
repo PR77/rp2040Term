@@ -22,7 +22,7 @@ typedef enum {
 } e_colourPaletteIndexes;
 
 #define CURSOR_FLASH_INTERVAL_MS        525
-#define MAXIMUM_POPUPS_ALLOWED          1
+#define MAXIMUM_POPUPS_ALLOWED          3
 #define DEFAULT_POPUP_DURATION_MS       750
 #define POPUP_UPDATE_INTERVAL_MS        50
 
