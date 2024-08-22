@@ -55,7 +55,7 @@ typedef struct {
     void        (* commandHandler)(void);   // pointer to the function that will interpret that command
 } st_vt100CommandTable;
 
-void vt100_putCharacter(uint8_t c);
+void vt100_putCharacter(char character);
 
 void cmd_CurHome(void);
 void cmd_CurUp(void);

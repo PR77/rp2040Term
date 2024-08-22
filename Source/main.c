@@ -47,7 +47,7 @@ void main_initialiseScanVideo(void) {
 
 int main(void) {
 
-    uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE];
+    char msgBuffer[TEXT_COLUMNS_VISIBLE];
 
     /* PLL Calculations --> python vcocalc.py 123.5
     Requested: 123.5 MHz
@@ -61,6 +61,7 @@ int main(void) {
 
     system_initialiseSystem();
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_initialisePopupBuffer();
     status_initialiseStatusBar(PALETTE_COLOUR_GREEN_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
 
     serial_initialiseTerminalUart(uart1);
@@ -111,6 +112,7 @@ int main(void) {
     while (true) {
         system_updateLedTask();
         conio_updateCursorTask();
+        conio_updatePopupTask();
         status_updateStatusBarTask();
         keyboard_updateKeyboardTask();
         system_updateBellTask();

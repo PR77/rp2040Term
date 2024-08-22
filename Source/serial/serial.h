@@ -24,23 +24,23 @@ typedef struct {
 } st_serialConfiguration;
 
 typedef struct {
-    uint8_t             buffer[UART_BUFFER_SIZE];
+    char                buffer[UART_BUFFER_SIZE];
     volatile uint8_t    headIndex;
     volatile uint8_t    tailIndex;
     bool                full;
 } st_serialBuffer;
 
 typedef struct {
-    void                (* characterHandler)(uint8_t character);
+    void                (* characterHandler)(char character);
 } st_receivedCharacterHandler;
 
 void serial_initialiseTerminalUart(uart_inst_t *uartId);
 st_serialConfiguration *serial_getSerialConfiguration(void);
 void serial_bufferInitialise(st_serialBuffer *serialBuffer);
-bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character);
-bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character);
-bool serial_uartSendCharacter(uint8_t character);
-bool serial_uartSendString(uint8_t *string_p);
-bool serial_attachReceivedCharacterHandler(void (*characterHandler)(uint8_t character));
+bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, char character);
+bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, char *character);
+bool serial_uartSendCharacter(char character);
+bool serial_uartSendString(char *string_p);
+bool serial_attachReceivedCharacterHandler(void (*characterHandler)(char character));
 
 #endif // SERIAL_H

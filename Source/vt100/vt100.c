@@ -60,7 +60,7 @@
 
 #define VTBUF_SIZE  40
 
-static uint8_t vtbuf[VTBUF_SIZE + 1];   // buffer for chars waiting to be decoded
+static char vtbuf[VTBUF_SIZE + 1];   // buffer for chars waiting to be decoded
 static uint8_t vtcnt;                   // count of the number of chars in vtbuf
 static uint8_t arg[8], argc;            // arguments to a command
 static uint8_t mode = VT100;
@@ -101,14 +101,14 @@ const st_vt100CommandTable vt100CommandTable[] = {
     { "\033[5n" ,       VT100,      cmd_VT100OK },
 };
 
-void vt100_putCharacter(uint8_t c) {
+void vt100_putCharacter(char character) {
     int cmd, i, j, partial;
 
     if (vtcnt >= VTBUF_SIZE) {
         return;
     }
 
-    vtbuf[vtcnt++] = c;
+    vtbuf[vtcnt++] = character;
     partial = false;
 
     while (vtcnt) {

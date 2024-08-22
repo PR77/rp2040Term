@@ -48,7 +48,7 @@ st_keyboardConfiguration *keyboard_getKeyboardConfiguration(void) {
     @param[in]     keyReleasedHandler function pointer to key release handler. Can be NULL if not required.
     @returns[out]  bool true if attach was successful, otherwise false.
 */
-bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(uint8_t keyCharacter), void (*keyReleasedHandler)(uint8_t keyCharacter)) {
+bool keyboard_attachDefaultKeyHandler(void (*keyPressedHandler)(char keyCharacter), void (*keyReleasedHandler)(char keyCharacter)) {
     
     bool attachedSuccess = false;
 
@@ -148,7 +148,7 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instanc
     }
 }
 
-static inline bool find_key_in_report(hid_keyboard_report_t const *report, uint8_t keycode) {
+static inline bool find_key_in_report(hid_keyboard_report_t const *report, char keycode) {
     // This is directly from the USB HID Keyboard PICO example. Can be found here
     // https://github.com/raspberrypi/pico-examples/blob/master/usb/host/host_cdc_msc_hid/hid_app.c
 
@@ -172,7 +172,7 @@ static inline bool findCustomKeyInReport(uint8_t keycode, uint8_t *index) {
     return false;
 }
 
-void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance, uint8_t const* report, uint16_t len) {
+void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)) instance, uint8_t const *report, uint16_t len) {
 
     uint8_t const itf_protocol = tuh_hid_interface_protocol(dev_addr, instance);
     // Previous reports to check key released events.

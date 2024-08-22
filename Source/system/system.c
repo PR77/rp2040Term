@@ -61,7 +61,6 @@ void system_initialiseSystem(void) {
 
     systemConfiguration.lcdBacklightValue = LCD_BACKLIGHTING_DEFAULT;
     systemConfiguration.enableBeeper = false;
-    systemConfiguration.fontUpdated = false;
 
     // Setup GPIO for LED
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -178,25 +177,7 @@ void system_cycleDisplayFont(void) {
         fontIndex++;
     }
 
-    systemConfiguration.fontUpdated = true;
-}
-
-/**
-    Clear the status flag to indicate the display font has been updated.
-*/
-void system_clearFontUpdatedStatus(void) {
-
-    systemConfiguration.fontUpdated = false;
-}
-
-/**
-    Gets a pointer into the font table which is currently in use.
-
-    @returns[out]  pointer to the currently indexed font structure.
-*/
-const st_fontEntry *system_getCurrentFontStructure(void) {
-
-    return (availableFonts[fontIndex]);
+    conio_displayPopup((uint8_t *)availableFonts[fontIndex]->fontName, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_RED_INDEX, 0);
 }
 
 /**
@@ -228,7 +209,7 @@ void system_onPwmWrap(void) {
     to conio (if local echo is enable) and sending the character data from
     keyboard entry to UART tramit buffer.
 */
-void system_handleKeyboardAndUartTransmitRouting(uint8_t character) {
+void system_handleKeyboardAndUartTransmitRouting(char character) {
 
     serial_uartSendCharacter(character);
 

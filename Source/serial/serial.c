@@ -66,7 +66,7 @@ void serial_bufferInitialise(st_serialBuffer *serialBuffer) {
     memset(serialBuffer, 0, sizeof(st_serialBuffer));
 }
 
-bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character) {
+bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, char character) {
     
     bool insertSuccess = false;
 
@@ -90,7 +90,7 @@ bool serial_bufferPutCharacter(st_serialBuffer *serialBuffer, uint8_t character)
     return (insertSuccess);
 }
 
-bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character) {
+bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, char *character) {
 
     bool removedSuccess = false;
 
@@ -122,7 +122,7 @@ bool serial_bufferGetCharacter(st_serialBuffer *serialBuffer, uint8_t *character
     @returns[out]  bool to indicate transmit was successfully queued in buffer.
 
 */
-bool serial_uartSendCharacter(uint8_t character) {
+bool serial_uartSendCharacter(char character) {
 
     bool insertSuccess = false;
 
@@ -149,7 +149,7 @@ bool serial_uartSendCharacter(uint8_t character) {
     @returns[out]  bool to indicate transmit was successfully queued in buffer.
 
 */
-bool serial_uartSendString(uint8_t *string_p) {
+bool serial_uartSendString(char *string_p) {
     
     assert (string_p != NULL);
 
@@ -165,7 +165,7 @@ bool serial_uartSendString(uint8_t *string_p) {
     @param[in]     characterHandler function pointer to character handler. Can be NULL if not required.
     @return[out]   bool true if attach was successful, otherwise false.
 */
-bool serial_attachReceivedCharacterHandler(void (*characterHandler)(uint8_t character)) {
+bool serial_attachReceivedCharacterHandler(void (*characterHandler)(char character)) {
 
     bool attachedSuccess = false;
 

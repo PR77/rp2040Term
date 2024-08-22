@@ -40,7 +40,7 @@ void status_initialiseStatusBar(e_colourPaletteIndexes foregroundColourIndex, e_
 */
 void status_forceStatusBarUpdate(void) {
 
-    uint8_t msgBuffer[TEXT_COLUMNS_VISIBLE + 1];
+    char msgBuffer[TEXT_COLUMNS_VISIBLE + 1];
     // Need to use TEXT_COLUMNS_VISIBLE + 1 to allow for the snprintf to add a NULL terminator.
 
     st_serialConfiguration *serial = serial_getSerialConfiguration();
