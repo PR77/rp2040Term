@@ -56,6 +56,8 @@
 #include "system.h"
 #include "serial.h"
 #include "conio.h"
+#include "cursor.h"
+#include "popup.h"
 #include "vt100.h"
 
 #define VTBUF_SIZE  40

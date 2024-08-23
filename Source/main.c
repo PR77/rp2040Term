@@ -28,6 +28,8 @@ https://github.com/Jamesits/bin2array
 #include "class/hid/hid.h"
 #include "main.h"
 #include "conio.h"
+#include "popup.h"
+#include "cursor.h"
 #include "serial.h"
 #include "status.h"
 #include "keyboard.h"
@@ -61,6 +63,7 @@ int main(void) {
 
     system_initialiseSystem();
     conio_initialiseCharacterBuffer(PALETTE_COLOUR_AMBER_INDEX, PALETTE_COLOUR_BLACK_INDEX);
+    conio_initialiseCursorBuffer();
     conio_initialisePopupBuffer();
     status_initialiseStatusBar(PALETTE_COLOUR_GREEN_INDEX, PALETTE_COLOUR_BLACK_INDEX, true);
 

@@ -14,6 +14,8 @@
 #include "font_sans8x16.h"
 #include "font_serif8x16.h"
 #include "conio.h"
+#include "cursor.h"
+#include "popup.h"
 #include "serial.h"
 #include "system.h"
 

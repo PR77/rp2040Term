@@ -31,6 +31,8 @@ add_executable(rp2040Term
   source/main.c
   source/system/system.c
   source/conio/conio.c
+  source/conio/cursor.c
+  source/conio/popup.c
   source/serial/serial.c 
   source/status/status.c
   source/keyboard/keyboard.c
