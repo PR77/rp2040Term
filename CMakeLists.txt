@@ -37,6 +37,7 @@ add_executable(rp2040Term
   source/status/status.c
   source/keyboard/keyboard.c
   source/vt100/vt100.c
+  source/fonts/font.c
   source/fonts/font_sun8x16.c
   source/fonts/font_sans8x16.c
   source/fonts/font_serif8x16.c)

@@ -10,9 +10,6 @@
 #include "RP2040-PWM-DMA-Audio-master/audio.h"
 #include "StartupAppleII.h"
 #include "font.h"
-#include "font_sun8x16.h"
-#include "font_sans8x16.h"
-#include "font_serif8x16.h"
 #include "conio.h"
 #include "cursor.h"
 #include "popup.h"
@@ -20,8 +17,6 @@
 #include "system.h"
 
 static st_systemConfiguration systemConfiguration;
-const st_fontEntry * availableFonts[] = {&sansFont, &serifFont, &sunFont};
-static uint8_t fontIndex = 0;
 
 const scanvideo_timing_t tftLQ043Timing_480x272_50 = {
 
@@ -99,6 +94,9 @@ void system_initialiseSystem(void) {
     pwm_init(slice_num, &config, true);   
 }
 
+/**
+    Initialise the audio player for beep tone generation.
+*/
 void system_initialiseAudioPlayer(void) {
 
     // Beep audio sample taken from https://froods.ca/~dschaub/sound.html.
@@ -167,22 +165,6 @@ void system_decreaseBacklightByStep(void) {
 }
 
 /**
-    Cycle through available display fonts
-*/
-void system_cycleDisplayFont(void) {
-
-    if ((fontIndex + 1) >= (sizeof(availableFonts) / sizeof(availableFonts[0]))) {
-        // Ensure we never set fontIndex to out of bounds otherwise the rendering running
-        // on Core 1 will index to out-of-bounds memory.
-        fontIndex = 0;
-    } else {
-        fontIndex++;
-    }
-
-    conio_displayPopup((uint8_t *)availableFonts[fontIndex]->fontName, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_RED_INDEX, 0);
-}
-
-/**
     System reset handler. Execute software triggered system reset.
 */
 void system_executeSystemReset(void) {
@@ -237,6 +219,7 @@ void __time_critical_func(system_renderLoop)(void) {
         struct scanvideo_scanline_buffer *buffer = scanvideo_begin_scanline_generation(true);
         uint16_t *pix = (uint16_t *)buffer->data;
         uint16_t scanlineNumber = scanvideo_scanline_number(buffer->scanline_id);
+        uint8_t fontIndex = font_getFontIndex();
         uint8_t rowIndex = (scanlineNumber / GLYPH_HEIGHT);
         uint8_t rowScanline = (scanlineNumber % GLYPH_HEIGHT);
         

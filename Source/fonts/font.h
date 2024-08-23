@@ -15,4 +15,9 @@ typedef struct {
     uint8_t                     glyphHeigth;
 } st_fontEntry;
 
+extern const st_fontEntry * availableFonts[];
+
+uint8_t font_getFontIndex(void);
+void font_cycleDisplayFont(void);
+
 #endif // FONT_H
