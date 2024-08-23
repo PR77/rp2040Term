@@ -364,6 +364,6 @@ void system_updateBellTask(void) {
 
     if (true == systemConfiguration.requestBeeper) {
         systemConfiguration.requestBeeper = false;
-        audio_play_once(samples, sizeof(samples));    
+        audio_play_once(samples, sizeof(samples));
     }
 }

@@ -180,7 +180,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t __attribute__((unused)
     hid_keyboard_report_t const *currentReport = (hid_keyboard_report_t const *)report;
 
     if ((HID_ITF_PROTOCOL_KEYBOARD == itf_protocol) && 
-        ((keyboardConfiguration.keyboardMounted == true) && (keyboardConfiguration.keyboardAddress == dev_addr))) { 
+        ((keyboardConfiguration.keyboardMounted == true) && (keyboardConfiguration.keyboardAddress == dev_addr))) {
 
         for(uint8_t i = 0; i < 6; i++) {
             if (currentReport->keycode[i] != 0) {

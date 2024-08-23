@@ -145,7 +145,7 @@ void conio_moveCursorUp(uint8_t positionCounts) {
 
     conio_hideCursor();
     if ((cursorPosition->currentCursorRow - positionCounts) >= 0) {
-        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow - positionCounts);    
+        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow - positionCounts);
     } else {
         cursorPosition->currentCursorRow = 0;    
     }
@@ -166,7 +166,7 @@ void conio_moveCursorDown(uint8_t positionCounts) {
 
     conio_hideCursor();
     if ((cursorPosition->currentCursorRow + positionCounts) < (TEXT_ROWS_VISIBLE - 1)) {
-        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow + positionCounts);    
+        cursorPosition->currentCursorRow = (cursorPosition->currentCursorRow + positionCounts);
     } else {
         cursorPosition->currentCursorRow = (TEXT_ROWS_VISIBLE - 1);
     }
@@ -187,7 +187,7 @@ void conio_moveCursorLeft(uint8_t positionCounts) {
 
     conio_hideCursor();
     if ((cursorPosition->currentCursorColumn - positionCounts) >= 0) {
-        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn - positionCounts);    
+        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn - positionCounts);
     } else {
         cursorPosition->currentCursorColumn = 0;    
     }
@@ -208,7 +208,7 @@ void conio_moveCursorRight(uint8_t positionCounts) {
 
     conio_hideCursor();
     if ((cursorPosition->currentCursorColumn + positionCounts) < (TEXT_COLUMNS_VISIBLE - 1)) {
-        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn + positionCounts);    
+        cursorPosition->currentCursorColumn = (cursorPosition->currentCursorColumn + positionCounts);
     } else {
         cursorPosition->currentCursorColumn = (TEXT_COLUMNS_VISIBLE - 1);
     }

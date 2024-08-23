@@ -25,7 +25,7 @@ void conio_initialisePopupBuffer(void) {
     @param[in]     string_p string to be printed to screen.
     @param[in]     foregroundColourIndex index into palette for characters foreground colour.
     @param[in]     backgroundColourIndex index into palette for characters background colour.
-    @param[in]     popupDuration duration that the popup shall be displayed for.
+    @param[in]     popupDuration duration (milliseconds) that the popup shall be displayed for. If 0, default is used.
     @returns[out]  uint8_t UINT_8 MAX if no popup could be allocated, otherwise index into popup structure.
 */
 uint8_t conio_displayPopup(char *string_p, e_colourPaletteIndexes foregroundColourIndex, e_colourPaletteIndexes backgroundColourIndex, uint16_t popupDuration) {
@@ -100,6 +100,13 @@ void conio_updatePopupTask(void) {
         // Need to find active enteries in the popup structure.
         for (uint8_t i = 0; i < MAXIMUM_POPUPS_ALLOWED; i++) {
             if (true == conioPopups[i].popupAllocated) {
+
+                if (conioPopups[i].remainingDisplayTime > POPUP_UPDATE_INTERVAL_MS) {
+                    conioPopups[i].remainingDisplayTime -= POPUP_UPDATE_INTERVAL_MS;
+                } else {
+                    conioPopups[i].remainingDisplayTime = 0;
+                }
+
                 if (0 == conioPopups[i].remainingDisplayTime) {
                     // Copy content of popup previous content buffer back to the conio.
                     st_conioCharacter *source = conioPopups[i].previousRowContent;
@@ -109,12 +116,6 @@ void conio_updatePopupTask(void) {
                     assert (destination != NULL);
                     memmove(destination, source, (sizeof(st_conioCharacter) * TEXT_COLUMNS_VISIBLE));
                     conioPopups[i].popupAllocated = false;
-                } else {
-                    if (conioPopups[i].remainingDisplayTime > POPUP_UPDATE_INTERVAL_MS) {
-                        conioPopups[i].remainingDisplayTime -= POPUP_UPDATE_INTERVAL_MS;  
-                    } else {
-                        conioPopups[i].remainingDisplayTime = 0;
-                    }
                 }
             }
         }
