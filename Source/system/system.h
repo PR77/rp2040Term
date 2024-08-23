@@ -46,7 +46,6 @@ void system_toggleLocalEcho(void);
 void system_toggleCRLF(void);
 void system_increaseBacklightByStep(void);
 void system_decreaseBacklightByStep(void);
-void system_cycleDisplayFont(void);
 void system_executeSystemReset(void);
 void system_onPwmWrap(void);
 void system_handleKeyboardAndUartTransmitRouting(char character);
