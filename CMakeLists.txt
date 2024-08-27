@@ -40,7 +40,8 @@ add_executable(rp2040Term
   source/fonts/font.c
   source/fonts/font_sun8x16.c
   source/fonts/font_sans8x16.c
-  source/fonts/font_serif8x16.c)
+  source/fonts/font_serif8x16.c
+  source/fonts/font_deco8x16.c)
 
 add_subdirectory(source/audio/RP2040-PWM-DMA-Audio-master)
 

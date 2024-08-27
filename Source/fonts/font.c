@@ -9,8 +9,9 @@
 #include "font_sun8x16.h"
 #include "font_sans8x16.h"
 #include "font_serif8x16.h"
+#include "font_deco8x16.h"
 
-const st_fontEntry * availableFonts[] = {&sansFont, &serifFont, &sunFont};
+const st_fontEntry * availableFonts[] = {&sansFont, &serifFont, &sunFont, &decoFont};
 static uint8_t fontIndex = 0;
 
 /**
@@ -36,5 +37,5 @@ void font_cycleDisplayFont(void) {
         fontIndex++;
     }
 
-    conio_displayPopup((uint8_t *)availableFonts[fontIndex]->fontName, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_RED_INDEX, 0);
+    conio_displayPopup((char *)availableFonts[fontIndex]->fontName, PALETTE_COLOUR_WHITE_INDEX, PALETTE_COLOUR_RED_INDEX, 0);
 }
