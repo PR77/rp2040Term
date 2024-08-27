@@ -188,7 +188,11 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
             cursorPosition->currentCursorColumn--;
         }
     } else {
+#if defined (CONIO_EXTENDED_ASCII_CHARACTER_SET)
+        if ((character >= ' ') && (character <= 0xFF)) {
+#else
         if ((character >= ' ') && (character <= 0x7F)) {
+#endif
             // Check if the character is printable, if so now finally print it. However,
             // firstly check if we are at the screen bounds. If so, then screen scroll up the previous lines.
 
