@@ -185,7 +185,14 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
         }
 
         if ((character == '\b') && (cursorPosition->currentCursorColumn > 0)) {
+            // Backspace, so lets move the cursor and clear the character at the previous position.
+
             cursorPosition->currentCursorColumn--;
+
+            st_conioCharacter *ch = conio_getCharacterBuffer(cursorPosition->currentCursorRow, cursorPosition->currentCursorColumn);
+            assert (ch != NULL);
+
+            ch->locationCharacter = ' ';
         }
     } else {
 #if defined (CONIO_EXTENDED_ASCII_CHARACTER_SET)
