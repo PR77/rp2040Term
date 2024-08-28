@@ -6,8 +6,6 @@
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 
-#define CONIO_EXTENDED_ASCII_CHARACTER_SET
-
 typedef enum {
     PALETTE_COLOUR_BLACK_INDEX = 0,
     PALETTE_COLOUR_RED_INDEX,
