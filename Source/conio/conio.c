@@ -180,10 +180,8 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
             }
         } 
 
-        if (character == '\t') { //&& (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS_VISIBLE - 4))) {
+        if (character == '\t') {
             conio_moveCursorRight(DEFAULT_CURSOR_TAB_STEPS);
-
-            //cursorPosition->currentCursorColumn += 4;
         }
 
         if ((character == '\b') && (cursorPosition->currentCursorColumn > 0)) {
