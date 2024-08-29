@@ -6,6 +6,8 @@
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
 
+#define DEFAULT_CURSOR_POSITION_STEPS   1
+#define DEFAULT_CURSOR_TAB_STEPS        4
 #define CURSOR_FLASH_INTERVAL_MS        525
 
 typedef struct {

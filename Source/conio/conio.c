@@ -180,8 +180,10 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
             }
         } 
 
-        if ((character == '\t') && (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS_VISIBLE - 4))) {
-            cursorPosition->currentCursorColumn += 4;
+        if (character == '\t') { //&& (cursorPosition->currentCursorColumn <= (TEXT_COLUMNS_VISIBLE - 4))) {
+            conio_moveCursorRight(DEFAULT_CURSOR_TAB_STEPS);
+
+            //cursorPosition->currentCursorColumn += 4;
         }
 
         if ((character == '\b') && (cursorPosition->currentCursorColumn > 0)) {
@@ -194,6 +196,23 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
 
             ch->locationCharacter = ' ';
         }
+#if defined (CONIO_ALLOW_CURSOR_MOVEMENTS_VIA_KEYBOARD)
+        if (character == 0x04) {
+            conio_moveCursorRight(DEFAULT_CURSOR_POSITION_STEPS);
+        }
+
+        if (character == 0x13) {
+            conio_moveCursorLeft(DEFAULT_CURSOR_POSITION_STEPS);
+        }
+
+        if (character == 0x18) {
+            conio_moveCursorDown(DEFAULT_CURSOR_POSITION_STEPS);
+        }
+
+        if (character == 0x05) {
+            conio_moveCursorUp(DEFAULT_CURSOR_POSITION_STEPS);
+        }
+#endif
     } else {
 #if defined (CONIO_EXTENDED_ASCII_CHARACTER_SET)
         if ((character >= ' ') && (character <= 0xFF)) {
@@ -228,6 +247,8 @@ void conio_printCharacter(char character, e_colourPaletteIndexes foregroundColou
             }
         }
     }
+
+    conio_displayCursor();
 }
 
 /**
