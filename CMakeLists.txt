@@ -24,7 +24,7 @@ math(EXPR BUILD_NUM "${BUILD_NUM}+1")
 # Concatenate back to one string:
 string(CONCAT VERSION_STRING ${VER_NUM} ${BUILD_NUM})
 # Print info and save to file:
-#message(NOTICE "New build number: ${VERSION_STRING}")
+message(NOTICE "New build number: ${VERSION_STRING}")
 file(WRITE "Source/build_number.h" ${VERSION_STRING})
 
 add_executable(rp2040Term
@@ -49,6 +49,7 @@ target_compile_definitions(rp2040Term PUBLIC
   PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS=250
   PICO_SCANVIDEO_ENABLE_CLOCK_PIN
   PICO_SCANVIDEO_ENABLE_DEN_PIN
+  BREADBOARD_PIN_ASSIGNMENTS
   CONIO_ALLOW_CURSOR_MOVEMENTS_VIA_KEYBOARD
   CONIO_EXTENDED_ASCII_CHARACTER_SET
   TEXT_COLUMNS=60

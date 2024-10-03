@@ -7,15 +7,29 @@
 #include "font.h"
 
 #define LCD_BACKLIGHT_PWM_PIN       28
+
+#if defined (BREADBOARD_PIN_ASSIGNMENTS)
 #define LCD_RESET_PON_PIN           26
+#else
+#define LCD_RESET_PON_PIN           22
+#endif
+
+#if defined (BREADBOARD_PIN_ASSIGNMENTS)
 #define LCD_HRV_VRV_SCANNING_PIN    22
+#else
+#define LCD_HRV_VRV_SCANNING_PIN    5
+#endif
 
 #define LCD_BACKLIGHTING_PWM_MIN    0
 #define LCD_BACKLIGHTING_PWM_MAX    100
 #define LCD_BACKLIGHTING_STEP_SIZE  10
 #define LCD_BACKLIGHTING_DEFAULT    70
 
+#if defined (BREADBOARD_PIN_ASSIGNMENTS)
 #define SOUND_OUTPUT_PIN            27
+#else
+#define SOUND_OUTPUT_PIN            26
+#endif
 
 #define LED_FLASH_INTERVAL_MS       500
 
