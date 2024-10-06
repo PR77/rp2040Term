@@ -9,9 +9,13 @@ The main purpose of this design was to learn about the RP2040 scanvideo library 
 
 I am currently using this with a Sharp LQ042 LCD with a resolution of 480x272. This works perfectly with a 8x16 Font to give a total of 60 Columns by 17 Rows.
 
-# Appearance
+# Appearance Breadboard Version
 ![LCD Screen](/Images/lcdScreen.jpg)
 ![Mess Of Wires](/Images/messOfWires.jpg)
+
+# Appearance PCB Version
+At the time of writing this update, PCBs are not yet 100% finalised, however here is the 3D render of the general layout. Schematics, gerbers and other support files will be added to this project once I've tested the PCB.
+![PCB Layout](/Images/pcbVersion.png)
 
 # Credits
 Repos containing some great tools and resources;
