@@ -1,5 +1,6 @@
 #include "pico.h"
 #include "pico/stdlib.h"
+#include "pico/binary_info.h"
 #include "string.h"
 #include "time.h"
 #include "serial.h"
@@ -35,7 +36,9 @@ void serial_initialiseTerminalUart(uart_inst_t *uartId) {
 
     // Set the TX and RX pins by using the function select on the GPIO
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    bi_decl(bi_1pin_with_func(UART_TX_PIN, GPIO_FUNC_UART));
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+    bi_decl(bi_1pin_with_func(UART_RX_PIN, GPIO_FUNC_UART));
 
     // Turn off FIFO's - we want to do this character by character
     uart_set_fifo_enabled(uartId, false);

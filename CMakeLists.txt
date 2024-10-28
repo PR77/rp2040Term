@@ -77,6 +77,12 @@ pico_enable_stdio_uart(rp2040Term 0)
 pico_enable_stdio_usb(rp2040Term 0)
 pico_add_extra_outputs(rp2040Term)
 
+# set info for picotool
+pico_set_program_name(rp2040Term "rp2040 Terminal")
+pico_set_program_description(rp2040Term "RP2040 Term 60Col TFT Version")
+pico_set_program_version(rp2040Term "${RP2040TERM_VERSION_MAJOR}.${RP2040TERM_VERSION_MINOR}.${BUILD_NUM}")
+pico_set_program_url(rp2040Term "https://github.com/PR77/rp2040Term")
+
 target_link_libraries(rp2040Term PRIVATE
   pico_stdlib
   pico_scanvideo_dpi

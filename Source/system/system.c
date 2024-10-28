@@ -3,6 +3,7 @@
 #include "pico/multicore.h"
 #include "pico/scanvideo.h"
 #include "pico/scanvideo/composable_scanline.h"
+#include "pico/binary_info.h"
 #include "hardware/clocks.h"
 #include "hardware/watchdog.h"
 #include "hardware/irq.h"
@@ -63,19 +64,23 @@ void system_initialiseSystem(void) {
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     gpio_put(PICO_DEFAULT_LED_PIN, false);
+    bi_decl(bi_1pin_with_name(PICO_DEFAULT_LED_PIN, "PICO_DEFAULT_LED_PIN"));
 
     // Setup GPIO for LCD PON
     gpio_init(LCD_RESET_PON_PIN);
     gpio_set_dir(LCD_RESET_PON_PIN, GPIO_OUT);
     gpio_put(LCD_RESET_PON_PIN, true);  
+    bi_decl(bi_1pin_with_name(LCD_RESET_PON_PIN, "LCD_RESET_PON_PIN"));
 
     // Setup GPIO for LCD Horizontal Scanning Direction
     gpio_init(LCD_HRV_VRV_SCANNING_PIN);
     gpio_set_dir(LCD_HRV_VRV_SCANNING_PIN, GPIO_OUT);
     gpio_put(LCD_HRV_VRV_SCANNING_PIN, true);  
+    bi_decl(bi_1pin_with_name(LCD_HRV_VRV_SCANNING_PIN, "LCD_HRV_VRV_SCANNING_PIN"));
 
     // Setup GPIO for LCD backlighting
     gpio_set_function(LCD_BACKLIGHT_PWM_PIN, GPIO_FUNC_PWM);
+    bi_decl(bi_1pin_with_func(LCD_BACKLIGHT_PWM_PIN, GPIO_FUNC_PWM));
     uint slice_num = pwm_gpio_to_slice_num(LCD_BACKLIGHT_PWM_PIN);
 
     // Mask our slice's IRQ output into the PWM block's single interrupt line,
@@ -104,6 +109,7 @@ void system_initialiseAudioPlayer(void) {
     // can be found here https://bitluni.net/wp-content/uploads/2018/01/Audio2Header.html.
 
     audio_init(SOUND_OUTPUT_PIN, sampleRate);
+    bi_decl(bi_1pin_with_name(SOUND_OUTPUT_PIN, "SOUND_OUTPUT_PIN"));
 }
 
 /**
