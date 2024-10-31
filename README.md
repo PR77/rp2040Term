@@ -14,7 +14,8 @@ I am currently using this with a Sharp LQ042 LCD with a resolution of 480x272. T
 ![Mess Of Wires](/Images/messOfWires.jpg)
 
 # Appearance PCB Version
-At the time of writing this update, PCBs are not yet 100% finalised, however here is the 3D render of the general layout. Schematics, gerbers and other support files will be added to this project once I've tested the PCB.
+Here is the 3D render of the general layout. Schematics, gerbers and other support files are now available. A few improvements to the PCB will be made over time, specially I want to add the RP2040 directly to the board and not use a Pi Pico. This iterration is more or less a proof of concept.
+
 ![PCB Layout](/Images/pcbVersion.png)
 
 # Credits
